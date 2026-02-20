@@ -3,76 +3,49 @@
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
   mat-icon { color: #1976d2; font-size: 20px; height: 20px; width: 20px; }
 }
 
-/* ── Dialog sizing ──────────────────────────────────────────────────────────
-   Target both the Angular tag selector AND the MDC class that Angular Material
-   adds internally (.mdc-dialog__content) so overflow:hidden actually sticks.
+/* ── Dialog sizing ───────────────────────────────────────────────────────────
+   Wider dialog (660px) + target every Angular Material MDC wrapper so
+   overflow:hidden truly applies and no scrollbar ever appears.
 */
 mat-dialog-content,
 ::ng-deep .mat-mdc-dialog-content,
 ::ng-deep .mdc-dialog__content {
-  width: 560px;
+  width: 660px;
   max-height: unset !important;
   overflow: hidden !important;
-  padding: 6px 0 2px !important;
+  padding: 8px 0 4px !important;
 }
 
 mat-dialog-actions {
-  padding: 6px 24px 10px !important;
+  padding: 8px 24px 12px !important;
   gap: 8px;
   min-height: unset;
 }
 
-/* ── Form layout ────────────────────────────────────────────────────────── */
+/* ── Form layout ─────────────────────────────────────────────────────────── */
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;   // tight but readable
+  gap: 8px;
 }
 
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   mat-form-field { width: 100%; }
 }
 
-/* ── Compact field density — 36px field height ──────────────────────────── */
+/* ── Prefix icon size only — no height/label hacks ──────────────────────── */
 ::ng-deep .edit-form {
-  .mat-mdc-form-field {
-    --mdc-outlined-text-field-container-height: 36px;
-  }
-
-  // Remove wrapper vertical padding so the outline hugs the 36px height
-  .mat-mdc-text-field-wrapper {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
-  // Tighten the infix (input area) vertical padding
-  .mat-mdc-form-field-infix {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-    min-height: 36px !important;
-  }
-
-  // Reposition floating label to vertically centre in 36px container
-  .mdc-notched-outline__notch .mdc-floating-label {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .mdc-notched-outline__notch .mdc-floating-label--float-above {
-    transform: translateY(-112%) scale(0.75);
-  }
-
-  // Prefix icon
   .mat-mdc-form-field-icon-prefix mat-icon {
-    font-size: 16px;
-    height: 16px;
-    width: 16px;
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
     padding: 0 4px 0 6px;
     color: #757575;
   }
@@ -90,7 +63,7 @@ mat-dialog-actions {
   align-items: center;
   gap: 10px;
   padding: 2px 0 0;
-  mat-slide-toggle { transform: scale(0.85); transform-origin: left center; }
+  mat-slide-toggle { transform: scale(0.88); transform-origin: left center; }
 }
 
 .toggle-hint { font-size: 11px; color: #757575; }
