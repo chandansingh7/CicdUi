@@ -6,17 +6,15 @@
 <mat-dialog-content>
   <form [formGroup]="form" autocomplete="off" class="edit-form">
 
-    <!-- Row 1: Username (read-only) + Role -->
+    <!-- Row 1: Username + Role -->
     <div class="two-col">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Username</mat-label>
         <input matInput [value]="data.user.username" readonly>
         <mat-icon matPrefix>badge</mat-icon>
-        <mat-hint>Cannot be changed</mat-hint>
       </mat-form-field>
 
-      <!-- Role: select for admin, read-only for self -->
-      <mat-form-field appearance="outline" *ngIf="data.adminMode">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" *ngIf="data.adminMode">
         <mat-label>Role</mat-label>
         <mat-select formControlName="role">
           <mat-option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</mat-option>
@@ -24,23 +22,22 @@
         <mat-icon matPrefix>security</mat-icon>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" *ngIf="!data.adminMode">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" *ngIf="!data.adminMode">
         <mat-label>Role</mat-label>
         <input matInput [value]="data.user.role | titlecase" readonly>
         <mat-icon matPrefix>security</mat-icon>
-        <mat-hint>Contact admin to change role</mat-hint>
       </mat-form-field>
     </div>
 
     <!-- Row 2: First Name + Last Name -->
     <div class="two-col">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>First Name</mat-label>
         <input matInput formControlName="firstName">
         <mat-icon matPrefix>person</mat-icon>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Last Name</mat-label>
         <input matInput formControlName="lastName">
         <mat-icon matPrefix>person_outline</mat-icon>
@@ -49,14 +46,14 @@
 
     <!-- Row 3: Email + Phone -->
     <div class="two-col">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Email *</mat-label>
         <input matInput formControlName="email" type="email">
         <mat-icon matPrefix>email</mat-icon>
         <mat-error>{{ getError('email', 'Email') }}</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Phone</mat-label>
         <input matInput formControlName="phone" placeholder="+1 555 000 0000">
         <mat-icon matPrefix>phone</mat-icon>
@@ -65,24 +62,23 @@
 
     <!-- Row 4: Address + Delivery Address -->
     <div class="two-col">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Address</mat-label>
-        <textarea matInput formControlName="address" rows="2"
-                  placeholder="Street, City, State"></textarea>
+        <textarea matInput formControlName="address" rows="1"
+                  cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="2"></textarea>
         <mat-icon matPrefix>location_on</mat-icon>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Delivery Address</mat-label>
-        <textarea matInput formControlName="deliveryAddress" rows="2"
-                  placeholder="Delivery location"></textarea>
+        <textarea matInput formControlName="deliveryAddress" rows="1"
+                  cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="2"></textarea>
         <mat-icon matPrefix>local_shipping</mat-icon>
       </mat-form-field>
     </div>
 
     <!-- Admin-only: Active toggle -->
     <div class="active-toggle" *ngIf="data.adminMode">
-      <mat-divider></mat-divider>
       <mat-slide-toggle formControlName="active" color="primary">
         Account Active
       </mat-slide-toggle>

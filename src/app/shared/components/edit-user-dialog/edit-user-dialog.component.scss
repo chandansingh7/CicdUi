@@ -2,58 +2,102 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  mat-icon { color: #1976d2; }
+  font-size: 16px;
+  padding-bottom: 4px;
+  mat-icon { color: #1976d2; font-size: 20px; height: 20px; width: 20px; }
 }
 
+/* ── Dialog sizing ──────────────────────────────────────────────────── */
+mat-dialog-content {
+  width: 560px;
+  padding: 8px 0 4px !important;
+  overflow: hidden !important;   // no scroll — everything must fit
+}
+
+mat-dialog-actions {
+  padding: 8px 24px 12px !important;
+  gap: 8px;
+  min-height: unset;
+}
+
+/* ── Form layout ────────────────────────────────────────────────────── */
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding-top: 4px;
+  gap: 6px;
 }
 
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 
   mat-form-field { width: 100%; }
 }
 
+/* ── Compact field density ──────────────────────────────────────────── */
+::ng-deep .edit-form {
+  // Reduce the inner container height of every outlined field
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-container-height: 42px;
+  }
+
+  // Tighten the top/bottom padding inside the input wrapper
+  .mat-mdc-text-field-wrapper {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  // Move the floating label up a bit to match the shorter container
+  .mdc-notched-outline__notch .mdc-floating-label {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .mdc-notched-outline__notch .mdc-floating-label--float-above {
+    transform: translateY(-106%) scale(0.75);
+  }
+
+  // Textarea: remove extra min-height
+  textarea.mat-mdc-input-element {
+    min-height: 24px !important;
+    line-height: 1.4;
+    padding-top: 8px !important;
+  }
+
+  // Prefix icon size
+  .mat-mdc-form-field-icon-prefix mat-icon {
+    font-size: 17px;
+    height: 17px;
+    width: 17px;
+    padding: 0 4px 0 6px;
+    color: #757575;
+  }
+
+  // Subscript (error/hint) — only takes space when actually shown
+  .mat-mdc-form-field-subscript-wrapper {
+    height: 0;
+    overflow: visible;
+  }
+}
+
+/* ── Admin toggle ───────────────────────────────────────────────────── */
 .active-toggle {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px 0 0;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0 0;
 
-  mat-divider { margin-bottom: 8px; }
+  mat-slide-toggle { transform: scale(0.88); transform-origin: left center; }
 }
 
 .toggle-hint {
   font-size: 11px;
   color: #757575;
-  padding-left: 2px;
 }
 
+/* ── Spinner ────────────────────────────────────────────────────────── */
 .btn-spinner {
   display: inline-block;
   margin-right: 6px;
   vertical-align: middle;
-}
-
-mat-dialog-content {
-  width: 580px;
-  max-height: 72vh;
-  padding-top: 4px !important;
-  overflow-y: auto;
-}
-
-mat-dialog-actions {
-  padding: 12px 24px !important;
-  gap: 8px;
-}
-
-/* Tighten Material field internals */
-::ng-deep .edit-form .mat-mdc-form-field-subscript-wrapper {
-  height: 14px;
 }

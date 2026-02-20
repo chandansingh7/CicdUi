@@ -23,6 +23,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { ChangePasswordDialogComponent } from './components/change-password-dialog/change-password-dialog.component';
 import { EditUserDialogComponent } from './components/edit-user-dialog/edit-user-dialog.component';
@@ -35,7 +36,7 @@ const MATERIAL_MODULES = [
   MatChipsModule, MatTooltipModule, MatMenuModule,
   MatDividerModule, MatBadgeModule, MatDatepickerModule,
   MatNativeDateModule, MatCheckboxModule, MatAutocompleteModule,
-  MatSlideToggleModule
+  MatSlideToggleModule, TextFieldModule
 ];
 
 @NgModule({

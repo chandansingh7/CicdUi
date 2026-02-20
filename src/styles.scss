@@ -108,3 +108,21 @@ html, body {
   .mat-mdc-snack-bar-label { color: white !important; }
   button { color: rgba(255,255,255,0.8) !important; }
 }
+
+// Error snackbar — shown by ErrorInterceptor for all HTTP errors
+// Includes error code prefix e.g. "[AU004] Access denied..."
+.error-snackbar .mdc-snackbar__surface {
+  background: #c62828 !important;
+  color: white !important;
+  border-radius: v.$radius-md !important;
+  min-width: 360px;
+  max-width: 600px;
+
+  .mat-mdc-snack-bar-label {
+    color: white !important;
+    font-weight: v.$font-weight-medium;
+    font-family: monospace;   // makes the code prefix stand out
+    letter-spacing: 0.01em;
+  }
+  button { color: rgba(255,255,255,0.8) !important; }
+}
