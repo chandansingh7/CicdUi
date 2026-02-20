@@ -3,12 +3,12 @@
 .table-wrap { overflow-x: auto; }
 
 .col-th { vertical-align: top !important; padding: 6px 8px 4px !important; }
-.col-inner { display: flex; flex-direction: column; gap: 3px; }
+.col-inner { display: flex; flex-direction: column; gap: 2px; min-width: 60px; }
 .col-label {
   font-size: 11px; font-weight: 700; color: #616161;
   text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
 }
-.actions-th { text-align: right !important; }
+.actions-th { text-align: right !important; min-width: 130px; }
 
 .filter-field {
   width: 100%;
@@ -21,18 +21,22 @@
 .ficon { font-size: 13px; width: 13px; height: 13px; color: #9e9e9e; }
 
 :host ::ng-deep {
-  .mat-sort-header-arrow { opacity: 0.35 !important; color: #757575; transition: opacity 0.2s, color 0.2s; }
+  .mat-sort-header-container { align-items: flex-start !important; }
+  .mat-sort-header-arrow {
+    margin-top: 1px !important; opacity: 0.45 !important; color: #9e9e9e;
+    transition: opacity 0.2s, color 0.2s;
+  }
   .mat-sort-header[aria-sort='ascending'] .mat-sort-header-arrow,
-  .mat-sort-header[aria-sort='descending'] .mat-sort-header-arrow { opacity: 1 !important; color: #1976d2 !important; }
+  .mat-sort-header[aria-sort='descending'] .mat-sort-header-arrow {
+    opacity: 1 !important; color: #1976d2 !important;
+  }
   .data-row .mat-mdc-cell { padding-top: 4px !important; padding-bottom: 4px !important; }
+  .actions-cell { white-space: nowrap; text-align: right; }
 }
 
 .order-row { cursor: pointer; &:hover { background: t.$color-background; } }
 
-.order-detail {
-  padding: t.$space-md t.$space-lg;
-  background: #fafafa;
-}
+.order-detail { padding: t.$space-md t.$space-lg; background: #fafafa; }
 
 .detail-header {
   display: flex;
@@ -45,13 +49,11 @@
   width: 100%;
   border-collapse: collapse;
   font-size: t.$font-size-sm;
-
   th, td {
     padding: t.$space-sm t.$space-md;
     text-align: left;
     border-bottom: 1px solid t.$color-border;
   }
-
   th { font-weight: t.$font-weight-semibold; background: #f0f0f0; }
   tfoot tr { background: #fafafa; }
   .total-row td { font-size: t.$font-size-md; }

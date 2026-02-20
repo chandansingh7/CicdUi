@@ -71,7 +71,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    // Do NOT set dataSource.paginator — pagination is server-side via loadProducts(page)
   }
 
   private setupSortingAccessor(): void {
