@@ -22,8 +22,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { ChangePasswordDialogComponent } from './components/change-password-dialog/change-password-dialog.component';
+import { EditUserDialogComponent } from './components/edit-user-dialog/edit-user-dialog.component';
 
 const MATERIAL_MODULES = [
   MatTableModule, MatPaginatorModule, MatSortModule,
@@ -32,17 +34,19 @@ const MATERIAL_MODULES = [
   MatSnackBarModule, MatSelectModule, MatProgressSpinnerModule,
   MatChipsModule, MatTooltipModule, MatMenuModule,
   MatDividerModule, MatBadgeModule, MatDatepickerModule,
-  MatNativeDateModule, MatCheckboxModule, MatAutocompleteModule
+  MatNativeDateModule, MatCheckboxModule, MatAutocompleteModule,
+  MatSlideToggleModule
 ];
 
 @NgModule({
-  declarations: [ConfirmDialogComponent, ChangePasswordDialogComponent],
+  declarations: [ConfirmDialogComponent, ChangePasswordDialogComponent, EditUserDialogComponent],
   imports: [CommonModule, ReactiveFormsModule, FormsModule, ...MATERIAL_MODULES],
   exports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     ...MATERIAL_MODULES,
     ConfirmDialogComponent,
-    ChangePasswordDialogComponent
+    ChangePasswordDialogComponent,
+    EditUserDialogComponent
   ]
 })
 export class SharedModule {}

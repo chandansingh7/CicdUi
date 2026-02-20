@@ -26,7 +26,7 @@ export class InventoryComponent implements OnInit {
     sku:         new FormControl(''),
     quantity:    new FormControl(''),
     threshold:   new FormControl(''),
-    status:      new FormControl(''),
+    status:      new FormControl(null),
     updatedAt:   new FormControl(''),
   });
 

@@ -2,6 +2,86 @@
   <h2>User Management</h2>
 </div>
 
+<!-- ── User List Table ─────────────────────────────────────────────────────── -->
+<mat-card class="card user-list-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>people</mat-icon>
+    <mat-card-title>All Users</mat-card-title>
+    <mat-card-subtitle>Click the edit icon to update a user's email, role, or status.</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="loadingUsers" style="display:flex;justify-content:center;padding:32px">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <div class="table-wrap" *ngIf="!loadingUsers">
+      <table mat-table [dataSource]="dataSource" class="full-width">
+
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Username</th>
+          <td mat-cell *matCellDef="let u">
+            <div class="user-cell">
+              <mat-icon class="user-avatar">account_circle</mat-icon>
+              <strong>{{ u.username }}</strong>
+              <mat-chip *ngIf="u.username === currentUsername" class="chip-you">You</mat-chip>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let u">
+            <mat-chip [class]="roleClass(u.role)">{{ u.role }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let u">
+            <mat-chip [class]="u.active ? 'chip-completed' : 'chip-cancelled'">
+              {{ u.active ? 'Active' : 'Inactive' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'mediumDate' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef style="text-align:right">Actions</th>
+          <td mat-cell *matCellDef="let u" class="actions-cell">
+            <button mat-icon-button (click)="openEdit(u)" matTooltip="Edit user">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button
+              [color]="u.active ? 'warn' : 'primary'"
+              [matTooltip]="u.active ? 'Deactivate' : 'Activate'"
+              [disabled]="u.username === currentUsername"
+              (click)="toggleActive(u)">
+              <mat-icon>{{ u.active ? 'person_off' : 'person' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="padding:32px;text-align:center">No users found.</td>
+        </tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- ── Create + Permissions ───────────────────────────────────────────────── -->
 <div class="users-layout">
   <mat-card class="card form-card">
     <mat-card-header>
@@ -11,7 +91,7 @@
     </mat-card-header>
 
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="register-form">
+      <form [formGroup]="createForm" (ngSubmit)="submit()" class="register-form">
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
@@ -44,8 +124,8 @@
           <mat-radio-group formControlName="role" class="role-group">
             <mat-card *ngFor="let r of roles"
                       class="role-card"
-                      [class.selected]="form.get('role')?.value === r.value"
-                      (click)="form.get('role')?.setValue(r.value)">
+                      [class.selected]="createForm.get('role')?.value === r.value"
+                      (click)="createForm.get('role')?.setValue(r.value)">
               <mat-card-content>
                 <mat-radio-button [value]="r.value" color="primary">
                   <strong>{{ r.label }}</strong>
@@ -61,10 +141,10 @@
           <span>{{ successMessage }}</span>
         </div>
 
-        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading">
-          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-          <mat-icon *ngIf="!loading">person_add</mat-icon>
-          <span>{{ loading ? 'Creating...' : 'Create User' }}</span>
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="creating">
+          <mat-spinner diameter="20" *ngIf="creating"></mat-spinner>
+          <mat-icon *ngIf="!creating">person_add</mat-icon>
+          <span>{{ creating ? 'Creating...' : 'Create User' }}</span>
         </button>
 
       </form>
@@ -80,14 +160,11 @@
       <mat-card-content>
         <div class="permission-table">
           <div class="permission-header">
-            <span>Feature</span>
-            <span>Admin</span>
-            <span>Manager</span>
-            <span>Cashier</span>
+            <span>Feature</span><span>Admin</span><span>Manager</span><span>Cashier</span>
           </div>
           <div class="permission-row" *ngFor="let row of permissionRows">
             <span>{{ row.feature }}</span>
-            <mat-icon [class]="row.admin ? 'yes' : 'no'">{{ row.admin ? 'check_circle' : 'cancel' }}</mat-icon>
+            <mat-icon [class]="row.admin   ? 'yes' : 'no'">{{ row.admin   ? 'check_circle' : 'cancel' }}</mat-icon>
             <mat-icon [class]="row.manager ? 'yes' : 'no'">{{ row.manager ? 'check_circle' : 'cancel' }}</mat-icon>
             <mat-icon [class]="row.cashier ? 'yes' : 'no'">{{ row.cashier ? 'check_circle' : 'cancel' }}</mat-icon>
           </div>

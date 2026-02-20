@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
+import { EditUserDialogComponent } from '../../shared/components/edit-user-dialog/edit-user-dialog.component';
+import { UserService } from '../../core/services/user.service';
 
 interface NavItem {
   label: string;
@@ -37,7 +39,8 @@ export class ShellComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +53,20 @@ export class ShellComponent implements OnInit {
       if (item.adminOnly) return this.authService.isAdmin();
       if (item.managerPlus) return this.authService.isAdminOrManager();
       return true;
+    });
+  }
+
+  openEditProfile(): void {
+    this.userService.getMe().subscribe({
+      next: res => {
+        this.dialog.open(EditUserDialogComponent, {
+          data: { user: res.data, adminMode: false },
+          width: '440px',
+          disableClose: true
+        }).afterClosed().subscribe(updated => {
+          if (updated) this.username = updated.email; // reflect change in sidebar
+        });
+      }
     });
   }
 

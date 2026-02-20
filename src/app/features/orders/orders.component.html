@@ -84,9 +84,9 @@
       <ng-container matColumnDef="payment">
         <th mat-header-cell *matHeaderCellDef class="col-th pay-th">
           <div class="filter-sort-row">
-            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-              <mat-select formControlName="payment">
-                <mat-option value="">All</mat-option>
+              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="payment" placeholder="Payment">
+                <mat-option [value]="null">All</mat-option>
                 <mat-option value="CASH">Cash</mat-option>
                 <mat-option value="CARD">Card</mat-option>
               </mat-select>
@@ -102,9 +102,9 @@
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef class="col-th status-th">
           <div class="filter-sort-row">
-            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-              <mat-select formControlName="status">
-                <mat-option value="">All</mat-option>
+              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="status" placeholder="Status">
+                <mat-option [value]="null">All</mat-option>
                 <mat-option value="PENDING">Pending</mat-option>
                 <mat-option value="COMPLETED">Completed</mat-option>
                 <mat-option value="CANCELLED">Cancelled</mat-option>

@@ -48,6 +48,10 @@
           <small>{{ role }}</small>
         </div>
         <mat-divider></mat-divider>
+        <button mat-menu-item (click)="openEditProfile()">
+          <mat-icon>account_circle</mat-icon>
+          <span>Edit Profile</span>
+        </button>
         <button mat-menu-item (click)="openChangePassword()">
           <mat-icon>lock_reset</mat-icon>
           <span>Change Password</span>

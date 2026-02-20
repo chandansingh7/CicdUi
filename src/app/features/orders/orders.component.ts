@@ -30,8 +30,8 @@ export class OrdersComponent implements OnInit {
     cashier:  new FormControl(''),
     items:    new FormControl(''),
     total:    new FormControl(''),
-    payment:  new FormControl(''),
-    status:   new FormControl(''),
+    payment:  new FormControl(null),
+    status:   new FormControl(null),
     date:     new FormControl(''),
   });
 

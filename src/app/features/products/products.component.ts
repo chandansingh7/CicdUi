@@ -38,7 +38,7 @@ export class ProductsComponent implements OnInit {
     category:  new FormControl(''),
     price:     new FormControl(''),
     stock:     new FormControl(''),
-    status:    new FormControl(''),
+    status:    new FormControl(null),
     updatedAt: new FormControl(''),
   });
 
