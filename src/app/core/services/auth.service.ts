@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api.models';
-import { AuthResponse, LoginRequest, Role } from '../models/auth.models';
+import { AuthResponse, LoginRequest, RegisterRequest, Role } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,6 +23,13 @@ export class AuthService {
           localStorage.setItem(this.USER_KEY, JSON.stringify(res.data));
         }
       })
+    );
+  }
+
+  register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(
+      `${environment.apiUrl}/api/auth/register`,
+      request
     );
   }
 

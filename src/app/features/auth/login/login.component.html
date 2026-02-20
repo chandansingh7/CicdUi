@@ -4,7 +4,7 @@
       <div class="logo-area">
         <mat-icon class="logo-icon">point_of_sale</mat-icon>
         <h1>POS System</h1>
-        <p>Point of Sale Management</p>
+        <p>Sign in to your account</p>
       </div>
     </mat-card-header>
 
@@ -27,6 +27,10 @@
           <mat-error *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">Password is required</mat-error>
         </mat-form-field>
 
+        <div class="forgot-link">
+          <a routerLink="/login/forgot-password" mat-button color="primary" class="forgot-btn">Forgot password?</a>
+        </div>
+
         <div *ngIf="error" class="error-message">
           <mat-icon>error</mat-icon>
           <span>{{ error }}</span>
@@ -34,9 +38,19 @@
 
         <button mat-raised-button color="primary" type="submit" class="full-width login-btn" [disabled]="loading">
           <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          <mat-icon *ngIf="!loading">login</mat-icon>
           <span *ngIf="!loading">Sign In</span>
         </button>
       </form>
     </mat-card-content>
+
+    <mat-card-actions class="auth-footer">
+      <span>Don't have an account?</span>
+      <a routerLink="/login/register" mat-button color="primary">Create Account</a>
+    </mat-card-actions>
   </mat-card>
+
+  <a routerLink="/" class="back-home">
+    <mat-icon>arrow_back</mat-icon> Back to home
+  </a>
 </div>

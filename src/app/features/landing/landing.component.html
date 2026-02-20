@@ -1,0 +1,90 @@
+<div class="landing-page">
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <mat-icon>point_of_sale</mat-icon>
+      <span>POS System</span>
+    </div>
+    <div class="nav-actions">
+      <a mat-button routerLink="/login" class="nav-link">Sign In</a>
+      <a mat-raised-button color="primary" routerLink="/login/register" class="nav-cta">Get Started Free</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <mat-icon>verified</mat-icon>
+        <span>Cloud-Based Point of Sale</span>
+      </div>
+      <h1>Run your business<br><span class="accent-text">smarter, faster.</span></h1>
+      <p class="hero-sub">
+        A complete POS platform for retail and hospitality — inventory, orders,
+        customers and reports all in one place.
+      </p>
+      <div class="hero-buttons">
+        <a mat-raised-button color="primary" routerLink="/login/register" class="hero-btn-primary">
+          <mat-icon>rocket_launch</mat-icon> Start for Free
+        </a>
+        <a mat-stroked-button routerLink="/login" class="hero-btn-secondary">
+          <mat-icon>login</mat-icon> Sign In
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="visual-card">
+        <div class="visual-header">
+          <mat-icon>point_of_sale</mat-icon>
+          <span>Today's Sales</span>
+        </div>
+        <div class="visual-stat">$4,820.50</div>
+        <div class="visual-sub">↑ 12% vs yesterday</div>
+        <div class="visual-bar"></div>
+        <div class="visual-bar short"></div>
+        <div class="visual-bar medium"></div>
+        <div class="visual-bar tall"></div>
+        <div class="visual-bar medium"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ───────────────────────────────────────────────────── -->
+  <section class="features">
+    <div class="section-label">Everything you need</div>
+    <h2>One platform. Every tool.</h2>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let f of features">
+        <div class="feature-icon">
+          <mat-icon>{{ f.icon }}</mat-icon>
+        </div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────────────── -->
+  <section class="cta-section">
+    <h2>Ready to get started?</h2>
+    <p>Create your free account in under 2 minutes. No credit card required.</p>
+    <a mat-raised-button routerLink="/login/register" class="cta-btn">
+      <mat-icon>person_add</mat-icon> Create Free Account
+    </a>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <mat-icon>point_of_sale</mat-icon>
+      <span>POS System</span>
+    </div>
+    <p>© 2026 POS System. Built with Angular & Spring Boot on Azure.</p>
+    <div class="footer-links">
+      <a routerLink="/login">Sign In</a>
+      <a routerLink="/login/register">Sign Up</a>
+    </div>
+  </footer>
+
+</div>

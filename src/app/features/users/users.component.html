@@ -1,0 +1,98 @@
+<div class="page-header">
+  <h2>User Management</h2>
+</div>
+
+<div class="users-layout">
+  <mat-card class="card form-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>person_add</mat-icon>
+      <mat-card-title>Create New User</mat-card-title>
+      <mat-card-subtitle>New user will be able to log in immediately after creation.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="register-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="off">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint>3–50 characters, used to log in</mat-hint>
+          <mat-error>{{ getError('username') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="off">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error>{{ getError('email') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>Minimum 6 characters</mat-hint>
+          <mat-error>{{ getError('password') }}</mat-error>
+        </mat-form-field>
+
+        <div class="role-section">
+          <label class="role-label">Role</label>
+          <mat-radio-group formControlName="role" class="role-group">
+            <mat-card *ngFor="let r of roles"
+                      class="role-card"
+                      [class.selected]="form.get('role')?.value === r.value"
+                      (click)="form.get('role')?.setValue(r.value)">
+              <mat-card-content>
+                <mat-radio-button [value]="r.value" color="primary">
+                  <strong>{{ r.label }}</strong>
+                </mat-radio-button>
+                <p class="role-desc">{{ r.description }}</p>
+              </mat-card-content>
+            </mat-card>
+          </mat-radio-group>
+        </div>
+
+        <div *ngIf="successMessage" class="success-banner">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ successMessage }}</span>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading">
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          <mat-icon *ngIf="!loading">person_add</mat-icon>
+          <span>{{ loading ? 'Creating...' : 'Create User' }}</span>
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="info-panel">
+    <mat-card class="card info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>info</mat-icon>
+        <mat-card-title>Role Permissions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="permission-table">
+          <div class="permission-header">
+            <span>Feature</span>
+            <span>Admin</span>
+            <span>Manager</span>
+            <span>Cashier</span>
+          </div>
+          <div class="permission-row" *ngFor="let row of permissionRows">
+            <span>{{ row.feature }}</span>
+            <mat-icon [class]="row.admin ? 'yes' : 'no'">{{ row.admin ? 'check_circle' : 'cancel' }}</mat-icon>
+            <mat-icon [class]="row.manager ? 'yes' : 'no'">{{ row.manager ? 'check_circle' : 'cancel' }}</mat-icon>
+            <mat-icon [class]="row.cashier ? 'yes' : 'no'">{{ row.cashier ? 'check_circle' : 'cancel' }}</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -39,12 +39,40 @@
   color: t.$color-primary-light;
 }
 
-.full-width  { width: 100%; margin-bottom: t.$space-sm; }
+.full-width  { width: 100%; margin-bottom: t.$space-xs; }
+
+.forgot-link { text-align: right; margin: -4px 0 4px; }
+.forgot-btn  { font-size: t.$font-size-sm; padding: 0 !important; }
 
 .login-btn {
   @include t.action-button(t.$button-height-lg);
   width: 100%;
   margin-top: t.$space-sm;
+}
+
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$space-xs;
+  padding: t.$space-md !important;
+  border-top: 1px solid t.$color-divider;
+  font-size: t.$font-size-base;
+  color: t.$color-text-secondary;
+}
+
+.back-home {
+  display: flex;
+  align-items: center;
+  gap: t.$space-xs;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: t.$font-size-sm;
+  margin-top: t.$space-md;
+  transition: t.$transition-fast;
+
+  &:hover { color: white; }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
 }
 
 .error-message {

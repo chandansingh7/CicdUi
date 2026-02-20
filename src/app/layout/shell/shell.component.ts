@@ -29,6 +29,7 @@ export class ShellComponent implements OnInit {
     { label: 'Customers', icon: 'people', route: '/app/customers' },
     { label: 'Inventory', icon: 'warehouse', route: '/app/inventory', managerPlus: true },
     { label: 'Reports', icon: 'bar_chart', route: '/app/reports', managerPlus: true },
+    { label: 'Users', icon: 'manage_accounts', route: '/app/users', adminOnly: true },
   ];
 
   constructor(private authService: AuthService, private router: Router) {}

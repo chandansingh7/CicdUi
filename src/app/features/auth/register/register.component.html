@@ -1,0 +1,75 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header class="auth-header">
+      <div class="logo-area">
+        <mat-icon class="logo-icon">point_of_sale</mat-icon>
+        <h1>Create Account</h1>
+        <p>Start your free POS System account</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="username">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint>3–50 characters, used to sign in</mat-hint>
+          <mat-error>{{ getError('username') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email address</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error>{{ getError('email') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>Minimum 6 characters</mat-hint>
+          <mat-error>{{ getError('password') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm password</mat-label>
+          <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password">
+          <mat-icon matPrefix>lock_reset</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirm = !hideConfirm">
+            <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="passwordMismatch">Passwords do not match</mat-error>
+          <mat-error *ngIf="!passwordMismatch">{{ getError('confirmPassword') }}</mat-error>
+        </mat-form-field>
+
+        <div *ngIf="error" class="error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading">
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          <mat-icon *ngIf="!loading">person_add</mat-icon>
+          <span>{{ loading ? 'Creating account...' : 'Create Account' }}</span>
+        </button>
+
+        <p class="terms-note">
+          By signing up you get a <strong>Cashier</strong> account.
+          Contact your administrator to request Manager or Admin access.
+        </p>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="auth-footer">
+      <span>Already have an account?</span>
+      <a routerLink="/login" mat-button color="primary">Sign In</a>
+    </mat-card-actions>
+  </mat-card>
+</div>
