@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,7 +19,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<ProductResponse>();
   categories: CategoryResponse[] = [];
 
@@ -26,7 +27,6 @@ export class ProductsComponent implements OnInit {
   brokenImages = new Set<number>();
 
   displayedColumns = ['image', 'name', 'sku', 'category', 'price', 'stock', 'status', 'updatedAt', 'updatedBy', 'actions'];
-  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
 
   totalElements = 0;
   pageSize = 10;
@@ -47,6 +47,7 @@ export class ProductsComponent implements OnInit {
   });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private productService: ProductService,
@@ -58,6 +59,7 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupFilterPredicate();
+    this.setupSortingAccessor();
     this.loadCategories();
     this.loadProducts();
 
@@ -65,6 +67,24 @@ export class ProductsComponent implements OnInit {
       .subscribe(() => this.loadProducts(0));
     this.categoryFilter.valueChanges.subscribe(() => this.loadProducts(0));
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  private setupSortingAccessor(): void {
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'category':  return item.categoryName ?? '';
+        case 'stock':     return item.quantity ?? 0;
+        case 'status':    return item.active ? 1 : 0;
+        case 'updatedAt': return item.updatedAt ?? '';
+        case 'updatedBy': return item.updatedBy ?? '';
+        default:          return (item as any)[property] ?? '';
+      }
+    };
   }
 
   private setupFilterPredicate(): void {
