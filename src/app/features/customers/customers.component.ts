@@ -22,8 +22,6 @@ export class CustomersComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['name', 'email', 'phone', 'createdAt', 'updatedAt', 'updatedBy', 'actions'];
 
-  @ViewChild(MatSort) sort!: MatSort;
-
   totalElements = 0;
   pageSize = 10;
   loading = false;
