@@ -1,72 +1,82 @@
 @use '@angular/material' as mat;
+@use 'variables' as v;
+@use 'typography';
 
+// ─── Angular Material Theme ───────────────────────────────────────────────────
 @include mat.core();
 
 $primary: mat.define-palette(mat.$indigo-palette, 700);
-$accent: mat.define-palette(mat.$blue-palette, A200);
-$warn: mat.define-palette(mat.$red-palette);
+$accent:  mat.define-palette(mat.$blue-palette, A200);
+$warn:    mat.define-palette(mat.$red-palette);
 
 $theme: mat.define-light-theme((
-  color: (primary: $primary, accent: $accent, warn: $warn),
+  color:      (primary: $primary, accent: $accent, warn: $warn),
   typography: mat.define-typography-config(),
-  density: 0,
+  density:    0,
 ));
 
 @include mat.all-component-themes($theme);
 
-* { box-sizing: border-box; }
+// ─── Global Reset ────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
 
 html, body {
   height: 100%;
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background: #f5f7fa;
+  background: v.$color-background;
 }
 
+// ─── Global Layout Helpers ───────────────────────────────────────────────────
+.full-width  { width: 100%; }
+.spacer      { flex: 1; }
+
+// ─── Spacing Utilities ───────────────────────────────────────────────────────
+.mt-8  { margin-top: v.$space-sm; }
+.mt-16 { margin-top: v.$space-md; }
+.mt-24 { margin-top: v.$space-lg; }
+.mb-8  { margin-bottom: v.$space-sm; }
+.mb-16 { margin-bottom: v.$space-md; }
+.mb-24 { margin-bottom: v.$space-lg; }
+
+// ─── Page Header (used globally) ─────────────────────────────────────────────
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: v.$space-lg;
 
   h2 {
     margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: #1a237e;
+    font-size: v.$font-size-xl;
+    font-weight: v.$font-weight-semibold;
+    color: v.$color-primary;
   }
 }
 
-.card {
-  border-radius: 12px !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
-}
-
-.mat-mdc-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
+// ─── Search Bar ──────────────────────────────────────────────────────────────
 .search-bar {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: v.$space-md;
+  margin-bottom: v.$space-md;
   align-items: flex-start;
 }
 
-.chip-in-stock { background: #e8f5e9 !important; color: #2e7d32 !important; }
-.chip-low-stock { background: #fff3e0 !important; color: #e65100 !important; }
-.chip-out-of-stock { background: #ffebee !important; color: #c62828 !important; }
-.chip-completed { background: #e8f5e9 !important; color: #2e7d32 !important; }
-.chip-pending { background: #e3f2fd !important; color: #1565c0 !important; }
-.chip-cancelled { background: #fce4ec !important; color: #880e4f !important; }
+// ─── Card ────────────────────────────────────────────────────────────────────
+.card {
+  border-radius: v.$radius-lg !important;
+  box-shadow: v.$shadow-md !important;
+}
 
-.full-width { width: 100%; }
+// ─── Status Chip Classes ─────────────────────────────────────────────────────
+.chip-in-stock    { background: v.$color-success-bg !important; color: v.$color-success !important; }
+.chip-low-stock   { background: v.$color-warn-bg !important;    color: v.$color-warn !important; }
+.chip-out-of-stock{ background: v.$color-danger-bg !important;  color: v.$color-danger !important; }
+.chip-completed   { background: v.$color-success-bg !important; color: v.$color-success !important; }
+.chip-pending     { background: v.$color-pending-bg !important; color: v.$color-pending !important; }
+.chip-cancelled   { background: v.$color-danger-bg !important;  color: v.$color-danger !important; }
 
-.spacer { flex: 1; }
-
-.text-right { text-align: right; }
-.text-center { text-align: center; }
-
-.mt-16 { margin-top: 16px; }
-.mb-16 { margin-bottom: 16px; }
+// ─── Material Table ──────────────────────────────────────────────────────────
+.mat-mdc-table {
+  border-radius: v.$radius-md;
+  overflow: hidden;
+}

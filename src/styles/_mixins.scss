@@ -1,0 +1,152 @@
+@use 'variables' as v;
+
+// ─── Responsive Breakpoints ──────────────────────────────────────────────────
+@mixin xs { @media (max-width: #{v.$bp-xs}) { @content; } }
+@mixin sm { @media (max-width: #{v.$bp-sm}) { @content; } }
+@mixin md { @media (max-width: #{v.$bp-md}) { @content; } }
+@mixin lg { @media (max-width: #{v.$bp-lg}) { @content; } }
+
+// ─── Layout Helpers ──────────────────────────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-row($gap: v.$space-md) {
+  display: flex;
+  align-items: center;
+  gap: $gap;
+}
+
+// ─── Card ────────────────────────────────────────────────────────────────────
+@mixin card($radius: v.$radius-lg, $shadow: v.$shadow-md) {
+  background: v.$color-surface;
+  border-radius: $radius !important;
+  box-shadow: $shadow !important;
+}
+
+// ─── Stat Card (coloured background) ─────────────────────────────────────────
+@mixin stat-card($bg-color) {
+  @include card(v.$radius-lg);
+  background: $bg-color !important;
+  color: v.$color-white;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+  }
+
+  .stat-value {
+    font-size: v.$font-size-hero;
+    font-weight: v.$font-weight-bold;
+    line-height: v.$line-height-tight;
+  }
+
+  .stat-label {
+    font-size: v.$font-size-xs;
+    opacity: 0.8;
+  }
+}
+
+// ─── Status Chip ─────────────────────────────────────────────────────────────
+@mixin status-chip($text-color, $bg-color) {
+  background: $bg-color !important;
+  color: $text-color !important;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  border-radius: v.$radius-pill;
+}
+
+// ─── Page Header ─────────────────────────────────────────────────────────────
+@mixin page-header {
+  @include flex-between;
+  margin-bottom: v.$space-lg;
+
+  h2 {
+    margin: 0;
+    font-size: v.$font-size-xl;
+    font-weight: v.$font-weight-semibold;
+    color: v.$color-primary;
+  }
+}
+
+// ─── Loading State ───────────────────────────────────────────────────────────
+@mixin loading-center($padding: v.$space-xxl) {
+  display: flex;
+  justify-content: center;
+  padding: $padding;
+}
+
+// ─── Empty State ─────────────────────────────────────────────────────────────
+@mixin empty-state {
+  @include flex-column;
+  align-items: center;
+  padding: v.$space-xxl v.$space-lg;
+  text-align: center;
+  color: v.$color-text-muted;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: v.$color-border;
+    margin-bottom: v.$space-md;
+  }
+
+  p {
+    font-size: v.$font-size-md;
+    margin: 0;
+  }
+}
+
+// ─── Button ──────────────────────────────────────────────────────────────────
+@mixin action-button($height: v.$button-height-lg) {
+  height: $height;
+  font-size: v.$font-size-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-sm;
+}
+
+// ─── Truncate text ───────────────────────────────────────────────────────────
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─── Search bar row ──────────────────────────────────────────────────────────
+@mixin search-bar {
+  display: flex;
+  gap: v.$space-md;
+  margin-bottom: v.$space-md;
+  align-items: flex-start;
+}
+
+// ─── Alert Banner ────────────────────────────────────────────────────────────
+@mixin alert-banner($text-color: v.$color-warn, $bg: v.$color-warn-bg, $border: v.$color-warn-border) {
+  @include flex-row(v.$space-md);
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: v.$radius-md;
+  padding: v.$space-sm v.$space-lg;
+  margin-bottom: v.$space-md;
+  color: $text-color;
+
+  mat-icon { color: $border; }
+}

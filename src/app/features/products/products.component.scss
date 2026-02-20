@@ -1,1 +1,3 @@
-.loading-center { display: flex; justify-content: center; padding: 48px; }
+@use 'theme' as t;
+
+.loading-center { @include t.loading-center; }

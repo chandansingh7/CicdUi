@@ -1,0 +1,7 @@
+// ─── Central Theme Export ────────────────────────────────────────────────────
+// Import this single file in any component SCSS:
+//   @use 'theme' as t;
+//   Then use: t.$color-primary, t.card(), t.flex-center(), etc.
+
+@forward 'variables';
+@forward 'mixins';

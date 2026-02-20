@@ -1,55 +1,43 @@
+@use 'theme' as t;
+
 .tab-bar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 4px;
+  gap: t.$space-sm;
+  margin-bottom: t.$space-lg;
+  border-bottom: 2px solid t.$color-border;
+  padding-bottom: t.$space-xs;
 
   .active-tab {
-    color: #1a237e;
-    border-bottom: 3px solid #1a237e;
+    color: t.$color-primary;
+    border-bottom: 3px solid t.$color-primary;
     border-radius: 0;
   }
 }
 
-.filter-bar {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
-}
+.filter-bar { display: flex; align-items: flex-start; gap: t.$space-md; margin-bottom: t.$space-lg; }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: t.$space-md;
 }
 
 .stat-card {
-  border-radius: 12px !important;
+  border-radius: t.$radius-lg !important;
   mat-card-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px !important;
-    gap: 8px;
+    padding: t.$space-lg !important;
+    gap: t.$space-sm;
     mat-icon { font-size: 32px; width: 32px; height: 32px; opacity: 0.8; }
   }
 }
 
-.stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
-.stat-label { font-size: 13px; opacity: 0.8; }
-.primary-card { background: #1a237e; color: white; }
-.success-card { background: #1b5e20; color: white; }
-.accent-card  { background: #006064; color: white; }
+.primary-card { @include t.stat-card(t.$card-bg-orders); }
+.success-card { @include t.stat-card(t.$card-bg-revenue); }
+.accent-card  { @include t.stat-card(t.$card-bg-average); }
 
-.loading-center { display: flex; justify-content: center; padding: 80px; }
+.loading-center { @include t.loading-center(t.$space-xxl + 32px); }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60px;
-  color: #999;
-  mat-icon { font-size: 64px; width: 64px; height: 64px; color: #ddd; }
-}
+.empty-state { @include t.empty-state; }

@@ -1,63 +1,29 @@
+@use 'theme' as t;
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: t.$space-md;
 }
 
 .stat-card {
-  border-radius: 12px !important;
+  border-radius: t.$radius-lg !important;
+
   mat-card-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px !important;
-    gap: 8px;
-
-    mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      opacity: 0.8;
-    }
+    padding: t.$space-lg !important;
+    gap: t.$space-sm;
   }
 }
 
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
-}
+// Each card colour references the single variable
+.primary-card { @include t.stat-card(t.$card-bg-orders); }
+.success-card { @include t.stat-card(t.$card-bg-revenue); }
+.accent-card  { @include t.stat-card(t.$card-bg-average); }
+.warn-card    { @include t.stat-card(t.$card-bg-alert); }
 
-.stat-label {
-  font-size: 13px;
-  opacity: 0.8;
-}
+.loading-center { @include t.loading-center; }
 
-.primary-card { background: #1a237e; color: white; }
-.success-card { background: #1b5e20; color: white; }
-.accent-card  { background: #006064; color: white; }
-.warn-card    { background: #bf360c; color: white; }
-
-.loading-center {
-  display: flex;
-  justify-content: center;
-  padding: 80px;
-}
-
-.empty-state mat-card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px !important;
-  text-align: center;
-  color: #666;
-
-  mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    color: #ccc;
-  }
-}
-
-.text-muted { color: #666; font-size: 14px; }
+.empty-state mat-card-content { @include t.empty-state; }

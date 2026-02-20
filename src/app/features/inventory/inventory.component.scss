@@ -1,15 +1,5 @@
-.alert-banner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #fff3e0;
-  border: 1px solid #ff9800;
-  border-radius: 8px;
-  padding: 12px 20px;
-  margin-bottom: 16px;
-  color: #e65100;
+@use 'theme' as t;
 
-  mat-icon { color: #ff9800; }
-}
+.alert-banner { @include t.alert-banner; }
 
-.zero-qty { color: #f44336; }
+.zero-qty { color: t.$color-danger-light; }
