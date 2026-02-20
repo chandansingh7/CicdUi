@@ -3,101 +3,97 @@
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
   mat-icon { color: #1976d2; font-size: 20px; height: 20px; width: 20px; }
 }
 
-/* ── Dialog sizing ──────────────────────────────────────────────────── */
-mat-dialog-content {
+/* ── Dialog sizing ──────────────────────────────────────────────────────────
+   Target both the Angular tag selector AND the MDC class that Angular Material
+   adds internally (.mdc-dialog__content) so overflow:hidden actually sticks.
+*/
+mat-dialog-content,
+::ng-deep .mat-mdc-dialog-content,
+::ng-deep .mdc-dialog__content {
   width: 560px;
-  padding: 8px 0 4px !important;
-  overflow: hidden !important;   // no scroll — everything must fit
+  max-height: unset !important;
+  overflow: hidden !important;
+  padding: 6px 0 2px !important;
 }
 
 mat-dialog-actions {
-  padding: 8px 24px 12px !important;
+  padding: 6px 24px 10px !important;
   gap: 8px;
   min-height: unset;
 }
 
-/* ── Form layout ────────────────────────────────────────────────────── */
+/* ── Form layout ────────────────────────────────────────────────────────── */
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;   // tight but readable
 }
 
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-
+  gap: 6px;
   mat-form-field { width: 100%; }
 }
 
-/* ── Compact field density ──────────────────────────────────────────── */
+/* ── Compact field density — 36px field height ──────────────────────────── */
 ::ng-deep .edit-form {
-  // Reduce the inner container height of every outlined field
   .mat-mdc-form-field {
-    --mdc-outlined-text-field-container-height: 42px;
+    --mdc-outlined-text-field-container-height: 36px;
   }
 
-  // Tighten the top/bottom padding inside the input wrapper
+  // Remove wrapper vertical padding so the outline hugs the 36px height
   .mat-mdc-text-field-wrapper {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
 
-  // Move the floating label up a bit to match the shorter container
+  // Tighten the infix (input area) vertical padding
+  .mat-mdc-form-field-infix {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    min-height: 36px !important;
+  }
+
+  // Reposition floating label to vertically centre in 36px container
   .mdc-notched-outline__notch .mdc-floating-label {
     top: 50%;
     transform: translateY(-50%);
   }
   .mdc-notched-outline__notch .mdc-floating-label--float-above {
-    transform: translateY(-106%) scale(0.75);
+    transform: translateY(-112%) scale(0.75);
   }
 
-  // Textarea: remove extra min-height
-  textarea.mat-mdc-input-element {
-    min-height: 24px !important;
-    line-height: 1.4;
-    padding-top: 8px !important;
-  }
-
-  // Prefix icon size
+  // Prefix icon
   .mat-mdc-form-field-icon-prefix mat-icon {
-    font-size: 17px;
-    height: 17px;
-    width: 17px;
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
     padding: 0 4px 0 6px;
     color: #757575;
   }
 
-  // Subscript (error/hint) — only takes space when actually shown
+  // Subscript — zero-height until an error actually shows
   .mat-mdc-form-field-subscript-wrapper {
     height: 0;
     overflow: visible;
   }
 }
 
-/* ── Admin toggle ───────────────────────────────────────────────────── */
+/* ── Admin toggle ────────────────────────────────────────────────────────── */
 .active-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 0 0;
-
-  mat-slide-toggle { transform: scale(0.88); transform-origin: left center; }
+  padding: 2px 0 0;
+  mat-slide-toggle { transform: scale(0.85); transform-origin: left center; }
 }
 
-.toggle-hint {
-  font-size: 11px;
-  color: #757575;
-}
+.toggle-hint { font-size: 11px; color: #757575; }
 
-/* ── Spinner ────────────────────────────────────────────────────────── */
-.btn-spinner {
-  display: inline-block;
-  margin-right: 6px;
-  vertical-align: middle;
-}
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
+.btn-spinner { display: inline-block; margin-right: 6px; vertical-align: middle; }
