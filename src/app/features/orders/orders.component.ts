@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,12 +15,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss']
 })
-export class OrdersComponent implements OnInit, AfterViewInit {
+export class OrdersComponent implements OnInit {
   dataSource = new MatTableDataSource<OrderResponse>();
-
   displayedColumns = ['id', 'customer', 'cashier', 'items', 'total', 'payment', 'status', 'date', 'actions'];
-
-  @ViewChild(MatSort) sort!: MatSort;
 
   totalElements = 0;
   pageSize = 10;
@@ -39,6 +35,9 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     date:     new FormControl(''),
   });
 
+  sortCol = '';
+  sortDir: 'asc' | 'desc' = 'asc';
+
   constructor(
     private orderService: OrderService,
     private authService: AuthService,
@@ -52,8 +51,34 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  sortBy(col: string): void {
+    this.sortDir = this.sortCol === col && this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortCol = col;
+    this.applySort();
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortCol !== col) return 'swap_vert';
+    return this.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  private applySort(): void {
+    if (!this.sortCol) return;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
+      let va: any, vb: any;
+      switch (this.sortCol) {
+        case 'customer': va = a.customerName ?? 'Walk-in'; vb = b.customerName ?? 'Walk-in'; break;
+        case 'cashier':  va = a.cashierUsername; vb = b.cashierUsername; break;
+        case 'items':    va = a.items?.length ?? 0; vb = b.items?.length ?? 0; break;
+        case 'payment':  va = a.paymentMethod; vb = b.paymentMethod; break;
+        case 'date':     va = a.createdAt; vb = b.createdAt; break;
+        default:         va = (a as any)[this.sortCol]; vb = (b as any)[this.sortCol];
+      }
+      va = (va ?? '').toString().toLowerCase();
+      vb = (vb ?? '').toString().toLowerCase();
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
   }
 
   private setupFilterPredicate(): void {
@@ -99,16 +124,14 @@ export class OrdersComponent implements OnInit, AfterViewInit {
         this.totalElements   = res.data?.totalElements || 0;
         this.loading = false;
         this.applyColumnFilters();
+        this.applySort();
       },
       error: () => { this.loading = false; }
     });
   }
 
   onPage(e: PageEvent): void { this.pageSize = e.pageSize; this.load(e.pageIndex); }
-
-  toggleExpand(order: OrderResponse): void {
-    this.expandedOrder = this.expandedOrder?.id === order.id ? null : order;
-  }
+  toggleExpand(order: OrderResponse): void { this.expandedOrder = this.expandedOrder?.id === order.id ? null : order; }
 
   cancelOrder(order: OrderResponse): void {
     this.dialog.open(ConfirmDialogComponent, {
@@ -125,8 +148,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   refundOrder(order: OrderResponse): void {
     this.dialog.open(ConfirmDialogComponent, {
       data: { title: 'Refund Order', message: `Issue refund for Order #${order.id}?`, confirmText: 'Refund' }
-    }).afterClosed().subscribe(confirmed => {
-      if (!confirmed) return;
+    }).afterClosed().subscribe(() => {
       this.snackBar.open('Refund issued — feature coming soon', 'Close', { duration: 3000 });
     });
   }

@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,10 +16,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss']
 })
-export class CustomersComponent implements OnInit, AfterViewInit {
+export class CustomersComponent implements OnInit {
   dataSource = new MatTableDataSource<CustomerResponse>();
-
-  displayedColumns = ['name', 'email', 'phone', 'createdAt', 'updatedAt', 'updatedBy', 'actions'];
+  displayedColumns = ['name', 'email', 'phone', 'createdAt', 'updatedAt', 'actions'];
 
   totalElements = 0;
   pageSize = 10;
@@ -33,11 +31,12 @@ export class CustomersComponent implements OnInit, AfterViewInit {
     phone:     new FormControl(''),
     createdAt: new FormControl(''),
     updatedAt: new FormControl(''),
-    updatedBy: new FormControl(''),
   });
 
+  sortCol = '';
+  sortDir: 'asc' | 'desc' = 'asc';
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private customerService: CustomerService,
@@ -51,12 +50,28 @@ export class CustomersComponent implements OnInit, AfterViewInit {
     this.load();
     this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(() => this.load(0));
+    this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    // Do NOT set dataSource.paginator — pagination is server-side via load(page)
-    this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  sortBy(col: string): void {
+    this.sortDir = this.sortCol === col && this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortCol = col;
+    this.applySort();
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortCol !== col) return 'swap_vert';
+    return this.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  private applySort(): void {
+    if (!this.sortCol) return;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
+      const va = ((a as any)[this.sortCol] ?? '').toString().toLowerCase();
+      const vb = ((b as any)[this.sortCol] ?? '').toString().toLowerCase();
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
   }
 
   private setupFilterPredicate(): void {
@@ -68,7 +83,6 @@ export class CustomersComponent implements OnInit, AfterViewInit {
         this.contains(row.phone, f.phone),
         this.contains(row.createdAt, f.createdAt),
         this.contains(row.updatedAt, f.updatedAt),
-        this.contains(row.updatedBy, f.updatedBy),
       ].every(Boolean);
     };
   }
@@ -86,7 +100,6 @@ export class CustomersComponent implements OnInit, AfterViewInit {
       phone:     v.phone     || '',
       createdAt: v.createdAt || '',
       updatedAt: v.updatedAt || '',
-      updatedBy: v.updatedBy || '',
     });
   }
 
@@ -98,6 +111,7 @@ export class CustomersComponent implements OnInit, AfterViewInit {
         this.totalElements   = res.data?.totalElements || 0;
         this.loading = false;
         this.applyColumnFilters();
+        this.applySort();
       },
       error: () => { this.loading = false; }
     });

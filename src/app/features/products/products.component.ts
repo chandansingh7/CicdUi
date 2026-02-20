@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,14 +18,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductsComponent implements OnInit, AfterViewInit {
+export class ProductsComponent implements OnInit {
   dataSource = new MatTableDataSource<ProductResponse>();
   categories: CategoryResponse[] = [];
-
-  /** Tracks product IDs whose imageUrl returned a 404 / broken URL */
   brokenImages = new Set<number>();
 
-  displayedColumns = ['image', 'name', 'sku', 'category', 'price', 'stock', 'status', 'updatedAt', 'updatedBy', 'actions'];
+  displayedColumns = ['image', 'name', 'sku', 'category', 'price', 'stock', 'status', 'updatedAt', 'actions'];
 
   totalElements = 0;
   pageSize = 10;
@@ -43,11 +40,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     stock:     new FormControl(''),
     status:    new FormControl(''),
     updatedAt: new FormControl(''),
-    updatedBy: new FormControl(''),
   });
 
+  // ── Custom sort ──────────────────────────────────────────────────────────────
+  sortCol = '';
+  sortDir: 'asc' | 'desc' = 'asc';
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private productService: ProductService,
@@ -59,32 +58,44 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.setupFilterPredicate();
-    this.setupSortingAccessor();
     this.loadCategories();
     this.loadProducts();
-
     this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(() => this.loadProducts(0));
     this.categoryFilter.valueChanges.subscribe(() => this.loadProducts(0));
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    // Do NOT set dataSource.paginator — pagination is server-side via loadProducts(page)
+  sortBy(col: string): void {
+    this.sortDir = this.sortCol === col && this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortCol = col;
+    this.applySort();
   }
 
-  private setupSortingAccessor(): void {
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'category':  return item.categoryName ?? '';
-        case 'stock':     return item.quantity ?? 0;
-        case 'status':    return item.active ? 1 : 0;
-        case 'updatedAt': return item.updatedAt ?? '';
-        case 'updatedBy': return item.updatedBy ?? '';
-        default:          return (item as any)[property] ?? '';
-      }
-    };
+  sortIcon(col: string): string {
+    if (this.sortCol !== col) return 'swap_vert';
+    return this.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  private applySort(): void {
+    if (!this.sortCol) return;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
+      const va = this.sortValue(a);
+      const vb = this.sortValue(b);
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
+  }
+
+  private sortValue(item: ProductResponse): any {
+    switch (this.sortCol) {
+      case 'category':  return (item.categoryName ?? '').toLowerCase();
+      case 'stock':     return item.quantity ?? 0;
+      case 'status':    return item.active ? 1 : 0;
+      case 'price':     return item.price ?? 0;
+      case 'updatedAt': return item.updatedAt ?? '';
+      default:          return ((item as any)[this.sortCol] ?? '').toString().toLowerCase();
+    }
   }
 
   private setupFilterPredicate(): void {
@@ -98,7 +109,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         this.contains(row.quantity?.toString(), f.stock),
         this.contains(row.active ? 'active' : 'inactive', f.status),
         this.contains(row.updatedAt, f.updatedAt),
-        this.contains(row.updatedBy, f.updatedBy),
       ].every(Boolean);
     };
   }
@@ -118,7 +128,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       stock:     v.stock     || '',
       status:    v.status    || '',
       updatedAt: v.updatedAt || '',
-      updatedBy: v.updatedBy || '',
     });
   }
 
@@ -135,6 +144,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         this.totalElements   = res.data?.totalElements || 0;
         this.loading = false;
         this.applyColumnFilters();
+        this.applySort();
       },
       error: () => { this.loading = false; }
     });
@@ -151,8 +161,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   openDialog(product?: ProductResponse): void {
     const ref = this.dialog.open(ProductDialogComponent, {
-      data: { product, categories: this.categories },
-      width: '580px'
+      data: { product, categories: this.categories }, width: '580px'
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;
@@ -160,20 +169,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       const save$ = product
         ? this.productService.update(product.id, productData)
         : this.productService.create(productData);
-
       save$.subscribe({
         next: (res) => {
           const savedId = res.data?.id ?? product?.id;
           if (imageFile && savedId) {
             this.productService.uploadImage(savedId, imageFile).subscribe({
-              next: () => {
-                this.snackBar.open('Product saved with image!', 'Close', { duration: 3000 });
-                this.loadProducts();
-              },
-              error: () => {
-                this.snackBar.open('Product saved — image upload failed', 'Close', { duration: 4000 });
-                this.loadProducts();
-              }
+              next: () => { this.snackBar.open('Product saved with image!', 'Close', { duration: 3000 }); this.loadProducts(); },
+              error: () => { this.snackBar.open('Product saved — image upload failed', 'Close', { duration: 4000 }); this.loadProducts(); }
             });
           } else {
             this.snackBar.open('Product saved!', 'Close', { duration: 3000 });
@@ -202,7 +204,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   delete(product: ProductResponse): void {
     this.dialog.open(ConfirmDialogComponent, {
-      data: { title: 'Delete Product', message: `Delete "${product.name}"? This cannot be undone.`, confirmText: 'Delete' }
+      data: { title: 'Delete Product', message: `Delete "${product.name}"?`, confirmText: 'Delete' }
     }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.productService.delete(product.id).subscribe({
@@ -212,13 +214,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onImageError(productId: number): void {
-    this.brokenImages.add(productId);
-  }
-
-  hasImage(p: ProductResponse): boolean {
-    return !!p.imageUrl && !this.brokenImages.has(p.id);
-  }
+  onImageError(productId: number): void { this.brokenImages.add(productId); }
+  hasImage(p: ProductResponse): boolean { return !!p.imageUrl && !this.brokenImages.has(p.id); }
 
   clearFilters(): void {
     this.filters.reset();

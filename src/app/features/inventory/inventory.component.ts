@@ -1,5 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,13 +14,10 @@ import { InventoryDialogComponent } from './inventory-dialog.component';
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss']
 })
-export class InventoryComponent implements OnInit, AfterViewInit {
+export class InventoryComponent implements OnInit {
   dataSource = new MatTableDataSource<InventoryResponse>();
   lowStockItems: InventoryResponse[] = [];
-
-  displayedColumns = ['productName', 'sku', 'quantity', 'threshold', 'status', 'updatedAt', 'updatedBy', 'actions'];
-
-  @ViewChild(MatSort) sort!: MatSort;
+  displayedColumns = ['productName', 'sku', 'quantity', 'threshold', 'status', 'updatedAt', 'actions'];
 
   loading = false;
 
@@ -32,8 +28,10 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     threshold:   new FormControl(''),
     status:      new FormControl(''),
     updatedAt:   new FormControl(''),
-    updatedBy:   new FormControl(''),
   });
+
+  sortCol = '';
+  sortDir: 'asc' | 'desc' = 'asc';
 
   constructor(
     private inventoryService: InventoryService,
@@ -48,8 +46,34 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  sortBy(col: string): void {
+    this.sortDir = this.sortCol === col && this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortCol = col;
+    this.applySort();
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortCol !== col) return 'swap_vert';
+    return this.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  private applySort(): void {
+    if (!this.sortCol) return;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
+      let va: any, vb: any;
+      switch (this.sortCol) {
+        case 'sku':       va = a.productSku; vb = b.productSku; break;
+        case 'threshold': va = a.lowStockThreshold ?? 0; vb = b.lowStockThreshold ?? 0; break;
+        case 'status':    va = a.stockStatus; vb = b.stockStatus; break;
+        case 'quantity':  va = a.quantity ?? 0; vb = b.quantity ?? 0; break;
+        default:          va = (a as any)[this.sortCol]; vb = (b as any)[this.sortCol];
+      }
+      if (typeof va === 'number') return (va - vb) * dir;
+      va = (va ?? '').toString().toLowerCase();
+      vb = (vb ?? '').toString().toLowerCase();
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
   }
 
   private setupFilterPredicate(): void {
@@ -62,7 +86,6 @@ export class InventoryComponent implements OnInit, AfterViewInit {
         this.contains(row.lowStockThreshold?.toString(), f.threshold),
         this.contains(row.stockStatus, f.status),
         this.contains(row.updatedAt, f.updatedAt),
-        this.contains(row.updatedBy, f.updatedBy),
       ].every(Boolean);
     };
   }
@@ -81,7 +104,6 @@ export class InventoryComponent implements OnInit, AfterViewInit {
       threshold:   v.threshold   || '',
       status:      v.status      || '',
       updatedAt:   v.updatedAt   || '',
-      updatedBy:   v.updatedBy   || '',
     });
   }
 
@@ -94,6 +116,7 @@ export class InventoryComponent implements OnInit, AfterViewInit {
         this.lowStockItems   = all.filter(i => i.stockStatus !== 'IN_STOCK');
         this.loading = false;
         this.applyColumnFilters();
+        this.applySort();
       },
       error: () => { this.loading = false; }
     });

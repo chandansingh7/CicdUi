@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -16,21 +15,19 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.scss']
 })
-export class CategoriesComponent implements OnInit, AfterViewInit {
+export class CategoriesComponent implements OnInit {
   dataSource = new MatTableDataSource<CategoryResponse>();
-
-  displayedColumns = ['name', 'description', 'updatedAt', 'updatedBy', 'actions'];
-
-  @ViewChild(MatSort) sort!: MatSort;
-
+  displayedColumns = ['name', 'description', 'updatedAt', 'actions'];
   loading = false;
 
   filters = new FormGroup({
-    name:      new FormControl(''),
+    name:        new FormControl(''),
     description: new FormControl(''),
-    updatedAt: new FormControl(''),
-    updatedBy: new FormControl(''),
+    updatedAt:   new FormControl(''),
   });
+
+  sortCol = '';
+  sortDir: 'asc' | 'desc' = 'asc';
 
   constructor(
     private categoryService: CategoryService,
@@ -45,8 +42,25 @@ export class CategoriesComponent implements OnInit, AfterViewInit {
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  sortBy(col: string): void {
+    this.sortDir = this.sortCol === col && this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortCol = col;
+    this.applySort();
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortCol !== col) return 'swap_vert';
+    return this.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  private applySort(): void {
+    if (!this.sortCol) return;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
+      const va = ((a as any)[this.sortCol] ?? '').toString().toLowerCase();
+      const vb = ((b as any)[this.sortCol] ?? '').toString().toLowerCase();
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
   }
 
   private setupFilterPredicate(): void {
@@ -56,7 +70,6 @@ export class CategoriesComponent implements OnInit, AfterViewInit {
         this.contains(row.name, f.name),
         this.contains(row.description, f.description),
         this.contains(row.updatedAt, f.updatedAt),
-        this.contains(row.updatedBy, f.updatedBy),
       ].every(Boolean);
     };
   }
@@ -72,7 +85,6 @@ export class CategoriesComponent implements OnInit, AfterViewInit {
       name:        v.name        || '',
       description: v.description || '',
       updatedAt:   v.updatedAt   || '',
-      updatedBy:   v.updatedBy   || '',
     });
   }
 
@@ -83,6 +95,7 @@ export class CategoriesComponent implements OnInit, AfterViewInit {
         this.dataSource.data = res.data || [];
         this.loading = false;
         this.applyColumnFilters();
+        this.applySort();
       },
       error: () => { this.loading = false; }
     });
