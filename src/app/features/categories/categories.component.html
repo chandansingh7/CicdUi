@@ -19,17 +19,14 @@
     <table mat-table [dataSource]="dataSource" class="full-width">
 
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner">
-            <span class="col-label">Name</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('name')" matTooltip="Sort">
-                <mat-icon [class.sort-active]="sortCol==='name'">{{ sortIcon('name') }}</mat-icon>
-              </button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-                <input matInput formControlName="name" placeholder="Name">
-              </mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th name-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="name" placeholder="Name">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('name')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='name'">{{ sortIcon('name') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let c"><strong>{{ c.name }}</strong></td>
@@ -37,33 +34,27 @@
 
       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner">
-            <span class="col-label">Description</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('description')" matTooltip="Sort">
-                <mat-icon [class.sort-active]="sortCol==='description'">{{ sortIcon('description') }}</mat-icon>
-              </button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-                <input matInput formControlName="description" placeholder="Description">
-              </mat-form-field>
-            </div>
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="description" placeholder="Description">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('description')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='description'">{{ sortIcon('description') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let c">{{ c.description || '—' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="updatedAt">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner">
-            <span class="col-label">Last Updated</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('updatedAt')" matTooltip="Sort">
-                <mat-icon [class.sort-active]="sortCol==='updatedAt'">{{ sortIcon('updatedAt') }}</mat-icon>
-              </button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-                <input matInput formControlName="updatedAt" placeholder="Last Updated">
-              </mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th date-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="updatedAt" placeholder="Last Updated">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('updatedAt')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='updatedAt'">{{ sortIcon('updatedAt') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let c">{{ c.updatedAt ? (c.updatedAt | date:'short') : '—' }}</td>

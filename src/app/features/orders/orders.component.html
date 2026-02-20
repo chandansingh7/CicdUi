@@ -12,98 +12,108 @@
     <table mat-table [dataSource]="dataSource" class="full-width">
 
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">#</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('id')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='id'">{{ sortIcon('id') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="id" placeholder="#"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th id-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="id" placeholder="#">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('id')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='id'">{{ sortIcon('id') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.id }}</td>
       </ng-container>
 
       <ng-container matColumnDef="customer">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Customer</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('customer')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='customer'">{{ sortIcon('customer') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="customer" placeholder="Customer"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th name-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="customer" placeholder="Customer">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('customer')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='customer'">{{ sortIcon('customer') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.customerName || 'Walk-in' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="cashier">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Cashier</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('cashier')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='cashier'">{{ sortIcon('cashier') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="cashier" placeholder="Cashier"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th name-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="cashier" placeholder="Cashier">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('cashier')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='cashier'">{{ sortIcon('cashier') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.cashierUsername }}</td>
       </ng-container>
 
       <ng-container matColumnDef="items">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Items</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('items')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='items'">{{ sortIcon('items') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="items" placeholder="Items"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th num-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="items" placeholder="Items">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('items')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='items'">{{ sortIcon('items') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.items?.length || 0 }}</td>
       </ng-container>
 
       <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Total</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('total')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='total'">{{ sortIcon('total') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="total" placeholder="Total"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th num-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="total" placeholder="Total">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('total')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='total'">{{ sortIcon('total') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o"><strong>${{ o.total | number:'1.2-2' }}</strong></td>
       </ng-container>
 
       <ng-container matColumnDef="payment">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Payment</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('payment')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='payment'">{{ sortIcon('payment') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-                <mat-select formControlName="payment">
-                  <mat-option value="">All</mat-option>
-                  <mat-option value="CASH">Cash</mat-option>
-                  <mat-option value="CARD">Card</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th pay-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="payment">
+                <mat-option value="">All</mat-option>
+                <mat-option value="CASH">Cash</mat-option>
+                <mat-option value="CARD">Card</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('payment')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='payment'">{{ sortIcon('payment') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.paymentMethod | titlecase }}</td>
       </ng-container>
 
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Status</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('status')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='status'">{{ sortIcon('status') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-                <mat-select formControlName="status">
-                  <mat-option value="">All</mat-option>
-                  <mat-option value="PENDING">Pending</mat-option>
-                  <mat-option value="COMPLETED">Completed</mat-option>
-                  <mat-option value="CANCELLED">Cancelled</mat-option>
-                  <mat-option value="REFUNDED">Refunded</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th status-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="status">
+                <mat-option value="">All</mat-option>
+                <mat-option value="PENDING">Pending</mat-option>
+                <mat-option value="COMPLETED">Completed</mat-option>
+                <mat-option value="CANCELLED">Cancelled</mat-option>
+                <mat-option value="REFUNDED">Refunded</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('status')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='status'">{{ sortIcon('status') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">
@@ -112,12 +122,14 @@
       </ng-container>
 
       <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef class="col-th">
-          <div class="col-inner"><span class="col-label">Date</span>
-            <div class="filter-sort-row">
-              <button mat-icon-button class="sort-btn" (click)="sortBy('date')" matTooltip="Sort"><mat-icon [class.sort-active]="sortCol==='date'">{{ sortIcon('date') }}</mat-icon></button>
-              <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"><input matInput formControlName="date" placeholder="Date"></mat-form-field>
-            </div>
+        <th mat-header-cell *matHeaderCellDef class="col-th date-th">
+          <div class="filter-sort-row">
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+              <input matInput formControlName="date" placeholder="Date">
+            </mat-form-field>
+            <button mat-icon-button class="sort-btn" (click)="sortBy('date')" matTooltip="Sort">
+              <mat-icon [class.sort-active]="sortCol==='date'">{{ sortIcon('date') }}</mat-icon>
+            </button>
           </div>
         </th>
         <td mat-cell *matCellDef="let o">{{ o.createdAt | date:'short' }}</td>
@@ -152,7 +164,6 @@
     </table>
   </div>
 
-  <!-- Expanded order detail -->
   <div *ngIf="expandedOrder" class="order-detail">
     <mat-divider></mat-divider>
     <div class="detail-header">

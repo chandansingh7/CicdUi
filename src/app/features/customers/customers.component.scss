@@ -3,36 +3,34 @@
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .table-wrap { overflow-x: auto; }
 
-.col-th { vertical-align: top !important; padding: 6px 8px 4px !important; }
-.col-inner { display: flex; flex-direction: column; gap: 2px; }
-.col-label {
-  font-size: 11px; font-weight: 700; color: #616161;
-  text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
-}
-.actions-th { text-align: right !important; min-width: 110px; }
+.col-th { vertical-align: middle !important; padding: 4px 6px !important; }
+.name-th  { min-width: 130px; }
+.phone-th { min-width: 110px; max-width: 130px; }
+.date-th  { min-width: 110px; max-width: 140px; }
+.actions-th { text-align: right !important; min-width: 110px; white-space: nowrap; }
 
 .filter-sort-row { display: flex; align-items: center; gap: 2px; }
 
 .sort-btn {
   flex-shrink: 0;
-  width: 24px !important; height: 24px !important; line-height: 24px !important; padding: 0 !important;
+  width: 22px !important; height: 22px !important; line-height: 22px !important; padding: 0 !important;
   mat-icon, .mat-icon {
-    font-size: 16px !important; width: 16px !important; height: 16px !important;
+    font-size: 15px !important; width: 15px !important; height: 15px !important;
     color: #bdbdbd; transition: color 0.2s;
   }
 }
 .sort-active { color: #1976d2 !important; }
 
 .filter-field {
-  flex: 1; min-width: 60px;
+  flex: 1;
   ::ng-deep .mat-mdc-form-field-infix {
-    padding-top: 3px !important; padding-bottom: 3px !important;
-    min-height: 26px !important; font-size: 11px !important;
+    padding-top: 2px !important; padding-bottom: 2px !important;
+    min-height: 24px !important; font-size: 11px !important;
   }
   ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 6px !important; }
 }
 
 :host ::ng-deep {
-  .data-row .mat-mdc-cell { padding-top: 4px !important; padding-bottom: 4px !important; }
+  .data-row .mat-mdc-cell { padding-top: 3px !important; padding-bottom: 3px !important; }
   .actions-cell { white-space: nowrap; text-align: right; }
 }
