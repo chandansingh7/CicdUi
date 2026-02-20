@@ -1,9 +1,31 @@
 @use 'theme' as t;
 
 .table-wrap { overflow-x: auto; }
-.filter-row th { padding: 4px 4px 0; background: #f9f9f9; }
-.filter-field { width: 100%; font-size: 12px; }
-.ficon { font-size: 16px; color: #9e9e9e; }
+
+.col-th { vertical-align: top !important; padding: 6px 8px 4px !important; }
+.col-inner { display: flex; flex-direction: column; gap: 3px; }
+.col-label {
+  font-size: 11px; font-weight: 700; color: #616161;
+  text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+}
+.actions-th { text-align: right !important; }
+
+.filter-field {
+  width: 100%;
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding-top: 3px !important; padding-bottom: 3px !important;
+    min-height: 26px !important; font-size: 11px !important;
+  }
+  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 4px !important; }
+}
+.ficon { font-size: 13px; width: 13px; height: 13px; color: #9e9e9e; }
+
+:host ::ng-deep {
+  .mat-sort-header-arrow { opacity: 0.35 !important; color: #757575; transition: opacity 0.2s, color 0.2s; }
+  .mat-sort-header[aria-sort='ascending'] .mat-sort-header-arrow,
+  .mat-sort-header[aria-sort='descending'] .mat-sort-header-arrow { opacity: 1 !important; color: #1976d2 !important; }
+  .data-row .mat-mdc-cell { padding-top: 4px !important; padding-bottom: 4px !important; }
+}
 
 .order-row { cursor: pointer; &:hover { background: t.$color-background; } }
 

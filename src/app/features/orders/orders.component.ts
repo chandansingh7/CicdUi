@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,11 +16,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss']
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<OrderResponse>();
 
   displayedColumns = ['id', 'customer', 'cashier', 'items', 'total', 'payment', 'status', 'date', 'actions'];
-  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   totalElements = 0;
   pageSize = 10;
@@ -48,6 +50,10 @@ export class OrdersComponent implements OnInit {
     this.setupFilterPredicate();
     this.load();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   private setupFilterPredicate(): void {

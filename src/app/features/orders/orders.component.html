@@ -9,135 +9,143 @@
   <div *ngIf="loading" style="display:flex;justify-content:center;padding:48px"><mat-spinner diameter="40"></mat-spinner></div>
 
   <div class="table-wrap" *ngIf="!loading" [formGroup]="filters">
-    <table mat-table [dataSource]="dataSource" class="full-width">
+    <table mat-table [dataSource]="dataSource" matSort class="full-width">
 
       <!-- ID -->
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let o">{{ o.id }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-id">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="id" placeholder="#">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">#</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="id" placeholder="#">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.id }}</td>
       </ng-container>
 
       <!-- Customer -->
       <ng-container matColumnDef="customer">
-        <th mat-header-cell *matHeaderCellDef>Customer</th>
-        <td mat-cell *matCellDef="let o">{{ o.customerName || 'Walk-in' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-customer">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="customer" placeholder="Filter customer">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Customer</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="customer" placeholder="Customer">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.customerName || 'Walk-in' }}</td>
       </ng-container>
 
       <!-- Cashier -->
       <ng-container matColumnDef="cashier">
-        <th mat-header-cell *matHeaderCellDef>Cashier</th>
-        <td mat-cell *matCellDef="let o">{{ o.cashierUsername }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-cashier">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="cashier" placeholder="Filter cashier">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Cashier</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="cashier" placeholder="Cashier">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.cashierUsername }}</td>
       </ng-container>
 
       <!-- Items -->
       <ng-container matColumnDef="items">
-        <th mat-header-cell *matHeaderCellDef>Items</th>
-        <td mat-cell *matCellDef="let o">{{ o.items?.length || 0 }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-items">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="items" placeholder="#">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Items</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="items" placeholder="Items">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.items?.length || 0 }}</td>
       </ng-container>
 
       <!-- Total -->
       <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef>Total</th>
-        <td mat-cell *matCellDef="let o"><strong>${{ o.total | number:'1.2-2' }}</strong></td>
-      </ng-container>
-      <ng-container matColumnDef="f-total">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="total" placeholder="Filter total">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Total</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="total" placeholder="Total">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o"><strong>${{ o.total | number:'1.2-2' }}</strong></td>
       </ng-container>
 
       <!-- Payment -->
       <ng-container matColumnDef="payment">
-        <th mat-header-cell *matHeaderCellDef>Payment</th>
-        <td mat-cell *matCellDef="let o">{{ o.paymentMethod | titlecase }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-payment">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <mat-select formControlName="payment">
-              <mat-option value="">All</mat-option>
-              <mat-option value="CASH">Cash</mat-option>
-              <mat-option value="CARD">Card</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Payment</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <mat-select formControlName="payment">
+                <mat-option value="">All</mat-option>
+                <mat-option value="CASH">Cash</mat-option>
+                <mat-option value="CARD">Card</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.paymentMethod | titlecase }}</td>
       </ng-container>
 
       <!-- Status -->
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Status</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <mat-select formControlName="status">
+                <mat-option value="">All</mat-option>
+                <mat-option value="PENDING">Pending</mat-option>
+                <mat-option value="COMPLETED">Completed</mat-option>
+                <mat-option value="CANCELLED">Cancelled</mat-option>
+                <mat-option value="REFUNDED">Refunded</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let o">
           <mat-chip [class]="statusClass(o.status)">{{ o.status }}</mat-chip>
         </td>
       </ng-container>
-      <ng-container matColumnDef="f-status">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <mat-select formControlName="status">
-              <mat-option value="">All</mat-option>
-              <mat-option value="PENDING">Pending</mat-option>
-              <mat-option value="COMPLETED">Completed</mat-option>
-              <mat-option value="CANCELLED">Cancelled</mat-option>
-              <mat-option value="REFUNDED">Refunded</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </th>
-      </ng-container>
 
       <!-- Date -->
       <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef>Date</th>
-        <td mat-cell *matCellDef="let o">{{ o.createdAt | date:'short' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-date">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="date" placeholder="Filter date">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Date</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="date" placeholder="Date">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let o">{{ o.createdAt | date:'short' }}</td>
       </ng-container>
 
       <!-- Actions -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <th mat-header-cell *matHeaderCellDef class="col-th actions-th">Actions</th>
         <td mat-cell *matCellDef="let o" class="text-right">
           <button mat-icon-button (click)="toggleExpand(o)" matTooltip="View details">
             <mat-icon>{{ expandedOrder?.id === o.id ? 'expand_less' : 'expand_more' }}</mat-icon>
@@ -156,13 +164,9 @@
           </button>
         </td>
       </ng-container>
-      <ng-container matColumnDef="f-actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-      </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="order-row" (click)="toggleExpand(row)"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row order-row" (click)="toggleExpand(row)"></tr>
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" style="padding:32px">No orders found.</td>
       </tr>

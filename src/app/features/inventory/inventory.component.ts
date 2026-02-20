@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,12 +15,13 @@ import { InventoryDialogComponent } from './inventory-dialog.component';
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss']
 })
-export class InventoryComponent implements OnInit {
+export class InventoryComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<InventoryResponse>();
   lowStockItems: InventoryResponse[] = [];
 
   displayedColumns = ['productName', 'sku', 'quantity', 'threshold', 'status', 'updatedAt', 'updatedBy', 'actions'];
-  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   loading = false;
 
@@ -44,6 +46,10 @@ export class InventoryComponent implements OnInit {
     this.setupFilterPredicate();
     this.load();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   private setupFilterPredicate(): void {

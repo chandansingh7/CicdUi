@@ -16,67 +16,71 @@
   </div>
 
   <div class="table-wrap" *ngIf="!loading" [formGroup]="filters">
-    <table mat-table [dataSource]="dataSource" class="full-width">
+    <table mat-table [dataSource]="dataSource" matSort class="full-width">
 
       <!-- Name -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let c"><strong>{{ c.name }}</strong></td>
-      </ng-container>
-      <ng-container matColumnDef="f-name">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="name" placeholder="Filter name">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Name</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="name" placeholder="Name">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let c"><strong>{{ c.name }}</strong></td>
       </ng-container>
 
       <!-- Description -->
       <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>Description</th>
-        <td mat-cell *matCellDef="let c">{{ c.description || '—' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-description">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="description" placeholder="Filter description">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Description</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="description" placeholder="Description">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let c">{{ c.description || '—' }}</td>
       </ng-container>
 
       <!-- Updated At -->
       <ng-container matColumnDef="updatedAt">
-        <th mat-header-cell *matHeaderCellDef>Last Updated</th>
-        <td mat-cell *matCellDef="let c">{{ c.updatedAt ? (c.updatedAt | date:'short') : '—' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-updatedAt">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="updatedAt" placeholder="Filter date">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Last Updated</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="updatedAt" placeholder="Last Updated">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let c">{{ c.updatedAt ? (c.updatedAt | date:'short') : '—' }}</td>
       </ng-container>
 
       <!-- Updated By -->
       <ng-container matColumnDef="updatedBy">
-        <th mat-header-cell *matHeaderCellDef>Updated By</th>
-        <td mat-cell *matCellDef="let c">{{ c.updatedBy || '—' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="f-updatedBy">
-        <th mat-header-cell *matHeaderCellDef class="filter-cell">
-          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
-            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
-            <input matInput formControlName="updatedBy" placeholder="Filter user">
-          </mat-form-field>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-th">
+          <div class="col-inner">
+            <span class="col-label">Updated By</span>
+            <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic"
+                            (click)="$event.stopPropagation()">
+              <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+              <input matInput formControlName="updatedBy" placeholder="Updated By">
+            </mat-form-field>
+          </div>
         </th>
+        <td mat-cell *matCellDef="let c">{{ c.updatedBy || '—' }}</td>
       </ng-container>
 
       <!-- Actions -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <th mat-header-cell *matHeaderCellDef class="col-th actions-th">Actions</th>
         <td mat-cell *matCellDef="let c" class="text-right">
           <button mat-icon-button *ngIf="isAdminOrManager" (click)="openDialog(c)" matTooltip="Edit">
             <mat-icon>edit</mat-icon>
@@ -86,13 +90,9 @@
           </button>
         </td>
       </ng-container>
-      <ng-container matColumnDef="f-actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-      </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" style="padding:32px">
           No categories match the current filters.

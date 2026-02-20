@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,11 +17,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss']
 })
-export class CustomersComponent implements OnInit {
+export class CustomersComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<CustomerResponse>();
 
   displayedColumns = ['name', 'email', 'phone', 'createdAt', 'updatedAt', 'updatedBy', 'actions'];
-  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   totalElements = 0;
   pageSize = 10;
@@ -37,6 +39,7 @@ export class CustomersComponent implements OnInit {
   });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private customerService: CustomerService,
@@ -50,6 +53,11 @@ export class CustomersComponent implements OnInit {
     this.load();
     this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(() => this.load(0));
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
   }
 

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -15,11 +16,12 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.scss']
 })
-export class CategoriesComponent implements OnInit {
+export class CategoriesComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<CategoryResponse>();
 
   displayedColumns = ['name', 'description', 'updatedAt', 'updatedBy', 'actions'];
-  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   loading = false;
 
@@ -41,6 +43,10 @@ export class CategoriesComponent implements OnInit {
     this.setupFilterPredicate();
     this.load();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   private setupFilterPredicate(): void {
