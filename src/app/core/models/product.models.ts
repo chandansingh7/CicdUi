@@ -22,4 +22,6 @@ export interface ProductResponse {
   active: boolean;
   quantity: number;
   createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
 }

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl, FormGroup } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
 import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CategoryResponse } from '../../core/models/category.models';
@@ -9,12 +12,23 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 
 @Component({
   selector: 'app-categories',
-  templateUrl: './categories.component.html'
+  templateUrl: './categories.component.html',
+  styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  categories: CategoryResponse[] = [];
-  displayedColumns = ['name', 'description', 'actions'];
+  dataSource = new MatTableDataSource<CategoryResponse>();
+
+  displayedColumns = ['name', 'description', 'updatedAt', 'updatedBy', 'actions'];
+  filterColumns    = this.displayedColumns.map(c => 'f-' + c);
+
   loading = false;
+
+  filters = new FormGroup({
+    name:      new FormControl(''),
+    description: new FormControl(''),
+    updatedAt: new FormControl(''),
+    updatedBy: new FormControl(''),
+  });
 
   constructor(
     private categoryService: CategoryService,
@@ -23,12 +37,47 @@ export class CategoriesComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.setupFilterPredicate();
+    this.load();
+    this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  private setupFilterPredicate(): void {
+    this.dataSource.filterPredicate = (row: CategoryResponse, filter: string) => {
+      const f = JSON.parse(filter);
+      return [
+        this.contains(row.name, f.name),
+        this.contains(row.description, f.description),
+        this.contains(row.updatedAt, f.updatedAt),
+        this.contains(row.updatedBy, f.updatedBy),
+      ].every(Boolean);
+    };
+  }
+
+  private contains(value: string | null | undefined, filter: string): boolean {
+    if (!filter) return true;
+    return (value ?? '').toString().toLowerCase().includes(filter.toLowerCase());
+  }
+
+  private applyColumnFilters(): void {
+    const v = this.filters.value;
+    this.dataSource.filter = JSON.stringify({
+      name:        v.name        || '',
+      description: v.description || '',
+      updatedAt:   v.updatedAt   || '',
+      updatedBy:   v.updatedBy   || '',
+    });
+  }
 
   load(): void {
     this.loading = true;
     this.categoryService.getAll().subscribe({
-      next: res => { this.categories = res.data || []; this.loading = false; },
+      next: res => {
+        this.dataSource.data = res.data || [];
+        this.loading = false;
+        this.applyColumnFilters();
+      },
       error: () => { this.loading = false; }
     });
   }
@@ -48,10 +97,9 @@ export class CategoriesComponent implements OnInit {
   }
 
   delete(category: CategoryResponse): void {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
+    this.dialog.open(ConfirmDialogComponent, {
       data: { title: 'Delete Category', message: `Delete "${category.name}"?`, confirmText: 'Delete' }
-    });
-    ref.afterClosed().subscribe(confirmed => {
+    }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.categoryService.delete(category.id).subscribe({
         next: () => { this.snackBar.open('Deleted', 'Close', { duration: 3000 }); this.load(); },
@@ -60,6 +108,9 @@ export class CategoriesComponent implements OnInit {
     });
   }
 
+  clearFilters(): void { this.filters.reset(); }
+
   get isAdmin(): boolean { return this.authService.isAdmin(); }
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
+  get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 }

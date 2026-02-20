@@ -1,5 +1,8 @@
 <div class="page-header">
   <h2>Inventory</h2>
+  <button mat-stroked-button *ngIf="hasActiveFilters" (click)="clearFilters()">
+    <mat-icon>filter_alt_off</mat-icon> Clear Filters
+  </button>
 </div>
 
 <div *ngIf="lowStockItems.length" class="alert-banner">
@@ -9,42 +12,141 @@
 
 <mat-card class="card">
   <div *ngIf="loading" style="display:flex;justify-content:center;padding:48px"><mat-spinner diameter="40"></mat-spinner></div>
-  <table mat-table [dataSource]="inventory" *ngIf="!loading" class="full-width">
-    <ng-container matColumnDef="productName">
-      <th mat-header-cell *matHeaderCellDef>Product</th>
-      <td mat-cell *matCellDef="let i"><strong>{{ i.productName }}</strong></td>
-    </ng-container>
-    <ng-container matColumnDef="sku">
-      <th mat-header-cell *matHeaderCellDef>SKU</th>
-      <td mat-cell *matCellDef="let i">{{ i.productSku || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="quantity">
-      <th mat-header-cell *matHeaderCellDef>Quantity</th>
-      <td mat-cell *matCellDef="let i" [class.zero-qty]="i.quantity === 0"><strong>{{ i.quantity }}</strong></td>
-    </ng-container>
-    <ng-container matColumnDef="threshold">
-      <th mat-header-cell *matHeaderCellDef>Low Stock At</th>
-      <td mat-cell *matCellDef="let i">{{ i.lowStockThreshold }}</td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let i">
-        <mat-chip [class]="statusClass(i.stockStatus)">{{ statusLabel(i.stockStatus) }}</mat-chip>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="updatedAt">
-      <th mat-header-cell *matHeaderCellDef>Last Updated</th>
-      <td mat-cell *matCellDef="let i">{{ i.updatedAt | date:'short' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
-      <td mat-cell *matCellDef="let i" class="text-right">
-        <button mat-icon-button color="primary" (click)="openUpdateDialog(i)" matTooltip="Update stock">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+
+  <div class="table-wrap" *ngIf="!loading" [formGroup]="filters">
+    <table mat-table [dataSource]="dataSource" class="full-width">
+
+      <!-- Product Name -->
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef>Product</th>
+        <td mat-cell *matCellDef="let i"><strong>{{ i.productName }}</strong></td>
+      </ng-container>
+      <ng-container matColumnDef="f-productName">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="productName" placeholder="Filter product">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- SKU -->
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef>SKU</th>
+        <td mat-cell *matCellDef="let i">{{ i.productSku || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-sku">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="sku" placeholder="Filter SKU">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Quantity -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let i" [class.zero-qty]="i.quantity === 0"><strong>{{ i.quantity }}</strong></td>
+      </ng-container>
+      <ng-container matColumnDef="f-quantity">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="quantity" placeholder="Filter qty">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Threshold -->
+      <ng-container matColumnDef="threshold">
+        <th mat-header-cell *matHeaderCellDef>Low Stock At</th>
+        <td mat-cell *matCellDef="let i">{{ i.lowStockThreshold }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-threshold">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="threshold" placeholder="Filter threshold">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let i">
+          <mat-chip [class]="statusClass(i.stockStatus)">{{ statusLabel(i.stockStatus) }}</mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-status">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <mat-select formControlName="status">
+              <mat-option value="">All</mat-option>
+              <mat-option value="IN_STOCK">In Stock</mat-option>
+              <mat-option value="LOW_STOCK">Low Stock</mat-option>
+              <mat-option value="OUT_OF_STOCK">Out of Stock</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated At -->
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef>Last Updated</th>
+        <td mat-cell *matCellDef="let i">{{ i.updatedAt ? (i.updatedAt | date:'short') : '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedAt">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedAt" placeholder="Filter date">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated By -->
+      <ng-container matColumnDef="updatedBy">
+        <th mat-header-cell *matHeaderCellDef>Updated By</th>
+        <td mat-cell *matCellDef="let i">{{ i.updatedBy || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedBy">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedBy" placeholder="Filter user">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <td mat-cell *matCellDef="let i" class="text-right">
+          <button mat-icon-button color="primary" *ngIf="isAdminOrManager"
+            (click)="openUpdateDialog(i)" matTooltip="Update stock">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <mat-chip [class]="i.stockStatus === 'OUT_OF_STOCK' ? 'chip-out-of-stock' : 'chip-low-stock'"
+            *ngIf="i.stockStatus !== 'IN_STOCK'" class="alert-chip" matTooltip="Needs restock">
+            <mat-icon>warning</mat-icon>
+          </mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" style="padding:32px">
+          No inventory items match the current filters.
+        </td>
+      </tr>
+    </table>
+  </div>
 </mat-card>

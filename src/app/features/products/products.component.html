@@ -1,8 +1,13 @@
 <div class="page-header">
   <h2>Products</h2>
-  <button mat-raised-button color="primary" *ngIf="isAdminOrManager" (click)="openDialog()">
-    <mat-icon>add</mat-icon> Add Product
-  </button>
+  <div class="header-actions">
+    <button mat-stroked-button *ngIf="hasActiveFilters" (click)="clearFilters()" class="clear-btn">
+      <mat-icon>filter_alt_off</mat-icon> Clear Filters
+    </button>
+    <button mat-raised-button color="primary" *ngIf="isAdminOrManager" (click)="openDialog()">
+      <mat-icon>add</mat-icon> Add Product
+    </button>
+  </div>
 </div>
 
 <div class="search-bar">
@@ -23,50 +28,191 @@
 <mat-card class="card">
   <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
 
-  <table mat-table [dataSource]="products" *ngIf="!loading" class="full-width">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let p"><strong>{{ p.name }}</strong></td>
-    </ng-container>
-    <ng-container matColumnDef="sku">
-      <th mat-header-cell *matHeaderCellDef>SKU</th>
-      <td mat-cell *matCellDef="let p">{{ p.sku || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="category">
-      <th mat-header-cell *matHeaderCellDef>Category</th>
-      <td mat-cell *matCellDef="let p">{{ p.categoryName || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef>Price</th>
-      <td mat-cell *matCellDef="let p">${{ p.price | number:'1.2-2' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="stock">
-      <th mat-header-cell *matHeaderCellDef>Stock</th>
-      <td mat-cell *matCellDef="let p">{{ p.quantity }}</td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let p">
-        <mat-chip [class]="p.active ? 'chip-completed' : 'chip-cancelled'">{{ p.active ? 'Active' : 'Inactive' }}</mat-chip>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
-      <td mat-cell *matCellDef="let p" class="text-right">
-        <button mat-icon-button *ngIf="isAdminOrManager" (click)="openDialog(p)" matTooltip="Edit">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" *ngIf="isAdmin" (click)="delete(p)" matTooltip="Delete">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" colspan="7" style="padding:32px">No products found.</td>
-    </tr>
-  </table>
+  <div class="table-wrap" *ngIf="!loading" [formGroup]="filters">
+    <table mat-table [dataSource]="dataSource" class="full-width">
+
+      <!-- Image -->
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef style="width:64px">Image</th>
+        <td mat-cell *matCellDef="let p" class="img-cell">
+
+          <!-- Loaded image -->
+          <img *ngIf="hasImage(p)"
+               [src]="p.imageUrl" [alt]="p.name"
+               class="product-thumb"
+               (error)="onImageError(p.id)">
+
+          <!-- No image: clickable upload button for admin/manager -->
+          <button *ngIf="!hasImage(p) && isAdminOrManager"
+                  mat-icon-button class="upload-img-btn"
+                  (click)="openDialog(p)"
+                  matTooltip="Upload product image"
+                  [matTooltipPosition]="'right'">
+            <mat-icon>add_a_photo</mat-icon>
+          </button>
+
+          <!-- No image: read-only placeholder for cashier -->
+          <mat-icon *ngIf="!hasImage(p) && !isAdminOrManager" class="no-img-icon">
+            hide_image
+          </mat-icon>
+
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-image">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell"></th>
+      </ng-container>
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let p"><strong>{{ p.name }}</strong></td>
+      </ng-container>
+      <ng-container matColumnDef="f-name">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="name" placeholder="Filter name">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- SKU -->
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef>SKU</th>
+        <td mat-cell *matCellDef="let p">{{ p.sku || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-sku">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="sku" placeholder="Filter SKU">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Category -->
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let p">{{ p.categoryName || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-category">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="category" placeholder="Filter category">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Price -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let p">${{ p.price | number:'1.2-2' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-price">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="price" placeholder="Filter price">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Stock -->
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let p">{{ p.quantity }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-stock">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="stock" placeholder="Filter stock">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let p">
+          <mat-chip [class]="p.active ? 'chip-completed' : 'chip-cancelled'">
+            {{ p.active ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-status">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <mat-select formControlName="status">
+              <mat-option value="">All</mat-option>
+              <mat-option value="active">Active</mat-option>
+              <mat-option value="inactive">Inactive</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated At -->
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef>Last Updated</th>
+        <td mat-cell *matCellDef="let p">{{ p.updatedAt ? (p.updatedAt | date:'short') : '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedAt">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedAt" placeholder="Filter date">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated By -->
+      <ng-container matColumnDef="updatedBy">
+        <th mat-header-cell *matHeaderCellDef>Updated By</th>
+        <td mat-cell *matCellDef="let p">{{ p.updatedBy || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedBy">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedBy" placeholder="Filter user">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <td mat-cell *matCellDef="let p" class="text-right">
+          <button mat-icon-button *ngIf="isAdminOrManager" (click)="openDialog(p)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="isAdmin" (click)="toggleActive(p)"
+            [matTooltip]="p.active ? 'Deactivate' : 'Activate'"
+            [color]="p.active ? 'warn' : 'primary'">
+            <mat-icon>{{ p.active ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" *ngIf="isAdmin" (click)="delete(p)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" style="padding:32px">
+          No products match the current filters.
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="[10,20,50]"
     (page)="onPage($event)" showFirstLastButtons></mat-paginator>

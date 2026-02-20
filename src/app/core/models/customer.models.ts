@@ -10,4 +10,6 @@ export interface CustomerResponse {
   email: string;
   phone: string;
   createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
 }

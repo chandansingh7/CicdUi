@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CategoryResponse } from '../../core/models/category.models';
@@ -13,13 +13,44 @@ export interface ProductDialogData {
   selector: 'app-product-dialog',
   template: `
     <h2 mat-dialog-title>{{ data.product ? 'Edit' : 'New' }} Product</h2>
+
     <mat-dialog-content>
       <form [formGroup]="form" class="dialog-form">
+
+        <!-- Image section -->
+        <div class="image-section">
+          <div class="image-preview" (click)="fileInput.click()" [class.has-image]="previewUrl">
+            <img *ngIf="previewUrl" [src]="previewUrl" alt="Product image" class="preview-img">
+            <div *ngIf="!previewUrl" class="no-image">
+              <mat-icon>add_photo_alternate</mat-icon>
+              <span>Click to upload image</span>
+            </div>
+          </div>
+          <div class="image-actions">
+            <button mat-stroked-button type="button" (click)="fileInput.click()">
+              <mat-icon>upload</mat-icon> {{ selectedFile ? 'Change' : 'Upload' }} Image
+            </button>
+            <button mat-icon-button type="button" color="warn" *ngIf="previewUrl" (click)="clearImage()" matTooltip="Remove image">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+          </div>
+          <input #fileInput type="file" accept="image/jpeg,image/png,image/gif,image/webp"
+            style="display:none" (change)="onFileSelected($event)">
+          <!-- URL fallback -->
+          <mat-form-field appearance="outline" class="full-width" style="margin-top:8px">
+            <mat-label>Or paste Image URL</mat-label>
+            <input matInput formControlName="imageUrl" placeholder="https://..." (input)="onUrlInput()">
+            <mat-icon matPrefix>link</mat-icon>
+          </mat-form-field>
+        </div>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name *</mat-label>
           <input matInput formControlName="name">
           <mat-error>Name is required</mat-error>
         </mat-form-field>
+
         <div class="row-2">
           <mat-form-field appearance="outline">
             <mat-label>SKU</mat-label>
@@ -30,6 +61,7 @@ export interface ProductDialogData {
             <input matInput formControlName="barcode">
           </mat-form-field>
         </div>
+
         <div class="row-2">
           <mat-form-field appearance="outline">
             <mat-label>Price *</mat-label>
@@ -45,6 +77,7 @@ export interface ProductDialogData {
             </mat-select>
           </mat-form-field>
         </div>
+
         <div class="row-2">
           <mat-form-field appearance="outline">
             <mat-label>{{ data.product ? 'Current Stock' : 'Initial Stock' }}</mat-label>
@@ -55,23 +88,57 @@ export interface ProductDialogData {
             <input matInput type="number" formControlName="lowStockThreshold" min="0">
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Image URL</mat-label>
-          <input matInput formControlName="imageUrl">
-        </mat-form-field>
+
         <mat-checkbox formControlName="active">Active</mat-checkbox>
       </form>
     </mat-dialog-content>
+
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Cancel</button>
       <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Save</button>
     </mat-dialog-actions>
   `,
-  styles: [`.dialog-form { display: flex; flex-direction: column; gap: 8px; min-width: 480px; padding-top: 8px; }
-    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }`]
+  styles: [`
+    .dialog-form {
+      display: flex; flex-direction: column; gap: 8px;
+      min-width: 480px; max-width: 540px; padding-top: 8px;
+    }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .full-width { width: 100%; }
+
+    .image-section {
+      border: 1px solid #e0e0e0; border-radius: 8px;
+      padding: 12px; background: #fafafa; margin-bottom: 4px;
+    }
+    .image-preview {
+      width: 100%; height: 140px; border-radius: 6px;
+      border: 2px dashed #bdbdbd; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background: #fff; transition: border-color 0.2s;
+    }
+    .image-preview:hover { border-color: #1976d2; }
+    .image-preview.has-image { border-style: solid; border-color: #e0e0e0; }
+    .preview-img { width: 100%; height: 100%; object-fit: contain; }
+    .no-image {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; color: #9e9e9e; font-size: 13px;
+      mat-icon { font-size: 36px; width: 36px; height: 36px; }
+    }
+    .image-actions {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 8px; flex-wrap: wrap;
+    }
+    .file-name { font-size: 12px; color: #616161; flex: 1; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap; }
+  `]
 })
-export class ProductDialogComponent implements OnInit {
+export class ProductDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
+  private objectUrl: string | null = null;
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private fb: FormBuilder,
@@ -82,19 +149,65 @@ export class ProductDialogComponent implements OnInit {
   ngOnInit(): void {
     const p = this.data.product;
     this.form = this.fb.group({
-      name: [p?.name || '', Validators.required],
-      sku: [p?.sku || ''],
-      barcode: [p?.barcode || ''],
-      price: [p?.price || '', [Validators.required, Validators.min(0.01)]],
-      categoryId: [p?.categoryId || null],
-      imageUrl: [p?.imageUrl || ''],
-      active: [p?.active !== undefined ? p.active : true],
-      initialStock: [p?.quantity || 0, Validators.min(0)],
+      name:              [p?.name || '', Validators.required],
+      sku:               [p?.sku || ''],
+      barcode:           [p?.barcode || ''],
+      price:             [p?.price || '', [Validators.required, Validators.min(0.01)]],
+      categoryId:        [p?.categoryId || null],
+      imageUrl:          [p?.imageUrl || ''],
+      active:            [p?.active !== undefined ? p.active : true],
+      initialStock:      [p?.quantity || 0, Validators.min(0)],
       lowStockThreshold: [10, Validators.min(0)]
     });
+
+    if (p?.imageUrl) {
+      this.previewUrl = p.imageUrl;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.revokeObjectUrl();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file  = input.files?.[0];
+    if (!file) return;
+
+    this.revokeObjectUrl();
+    this.selectedFile = file;
+    this.objectUrl    = URL.createObjectURL(file);
+    this.previewUrl   = this.objectUrl;
+    this.form.get('imageUrl')?.setValue('', { emitEvent: false });
+  }
+
+  onUrlInput(): void {
+    const url = this.form.get('imageUrl')?.value;
+    if (url) {
+      this.selectedFile = null;
+      this.revokeObjectUrl();
+      this.previewUrl = url;
+    } else {
+      this.previewUrl = null;
+    }
+  }
+
+  clearImage(): void {
+    this.selectedFile = null;
+    this.revokeObjectUrl();
+    this.previewUrl = null;
+    this.form.get('imageUrl')?.setValue('');
   }
 
   save(): void {
-    if (this.form.valid) this.dialogRef.close(this.form.value);
+    if (this.form.invalid) return;
+    this.dialogRef.close({ ...this.form.value, imageFile: this.selectedFile ?? undefined });
+  }
+
+  private revokeObjectUrl(): void {
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
+    }
   }
 }

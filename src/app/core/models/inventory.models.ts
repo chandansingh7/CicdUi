@@ -12,4 +12,5 @@ export interface InventoryResponse {
   lowStockThreshold: number;
   stockStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
   updatedAt: string;
+  updatedBy: string;
 }

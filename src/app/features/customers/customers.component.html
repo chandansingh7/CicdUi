@@ -1,50 +1,141 @@
 <div class="page-header">
   <h2>Customers</h2>
-  <button mat-raised-button color="primary" (click)="openDialog()">
-    <mat-icon>person_add</mat-icon> Add Customer
-  </button>
+  <div class="header-actions">
+    <button mat-stroked-button *ngIf="hasActiveFilters" (click)="clearFilters()">
+      <mat-icon>filter_alt_off</mat-icon> Clear Filters
+    </button>
+    <button mat-raised-button color="primary" (click)="openDialog()">
+      <mat-icon>person_add</mat-icon> Add Customer
+    </button>
+  </div>
 </div>
 
 <div class="search-bar">
   <mat-form-field appearance="outline" style="flex:1">
     <mat-label>Search customers</mat-label>
-    <input matInput [formControl]="searchControl" placeholder="Name, email...">
+    <input matInput [formControl]="searchControl" placeholder="Name, email, phone...">
     <mat-icon matPrefix>search</mat-icon>
   </mat-form-field>
 </div>
 
 <mat-card class="card">
   <div *ngIf="loading" style="display:flex;justify-content:center;padding:48px"><mat-spinner diameter="40"></mat-spinner></div>
-  <table mat-table [dataSource]="customers" *ngIf="!loading" class="full-width">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let c"><strong>{{ c.name }}</strong></td>
-    </ng-container>
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-      <td mat-cell *matCellDef="let c">{{ c.email || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="phone">
-      <th mat-header-cell *matHeaderCellDef>Phone</th>
-      <td mat-cell *matCellDef="let c">{{ c.phone || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef>Joined</th>
-      <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'mediumDate' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
-      <td mat-cell *matCellDef="let c" class="text-right">
-        <button mat-icon-button (click)="openDialog(c)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button color="warn" *ngIf="isAdminOrManager" (click)="delete(c)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" colspan="5" style="padding:32px">No customers found.</td>
-    </tr>
-  </table>
+
+  <div class="table-wrap" *ngIf="!loading" [formGroup]="filters">
+    <table mat-table [dataSource]="dataSource" class="full-width">
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let c"><strong>{{ c.name }}</strong></td>
+      </ng-container>
+      <ng-container matColumnDef="f-name">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="name" placeholder="Filter name">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let c">{{ c.email || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-email">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="email" placeholder="Filter email">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Phone -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let c">{{ c.phone || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-phone">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="phone" placeholder="Filter phone">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Joined -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Joined</th>
+        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'mediumDate' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-createdAt">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="createdAt" placeholder="Filter date">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated At -->
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef>Last Updated</th>
+        <td mat-cell *matCellDef="let c">{{ c.updatedAt ? (c.updatedAt | date:'short') : '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedAt">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedAt" placeholder="Filter date">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Updated By -->
+      <ng-container matColumnDef="updatedBy">
+        <th mat-header-cell *matHeaderCellDef>Updated By</th>
+        <td mat-cell *matCellDef="let c">{{ c.updatedBy || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="f-updatedBy">
+        <th mat-header-cell *matHeaderCellDef class="filter-cell">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="ficon">filter_list</mat-icon>
+            <input matInput formControlName="updatedBy" placeholder="Filter user">
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <td mat-cell *matCellDef="let c" class="text-right">
+          <button mat-icon-button (click)="viewOrders(c)" matTooltip="View Orders" color="primary">
+            <mat-icon>receipt_long</mat-icon>
+          </button>
+          <button mat-icon-button (click)="openDialog(c)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" *ngIf="isAdminOrManager" (click)="delete(c)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="f-actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" style="padding:32px">No customers found.</td>
+      </tr>
+    </table>
+  </div>
+
   <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="[10,20,50]"
     (page)="onPage($event)" showFirstLastButtons></mat-paginator>
 </mat-card>
