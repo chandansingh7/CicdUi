@@ -23,6 +23,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ChangePasswordDialogComponent } from './components/change-password-dialog/change-password-dialog.component';
 
 const MATERIAL_MODULES = [
   MatTableModule, MatPaginatorModule, MatSortModule,
@@ -35,12 +36,13 @@ const MATERIAL_MODULES = [
 ];
 
 @NgModule({
-  declarations: [ConfirmDialogComponent],
-  imports: [CommonModule, ...MATERIAL_MODULES],
+  declarations: [ConfirmDialogComponent, ChangePasswordDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ...MATERIAL_MODULES],
   exports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     ...MATERIAL_MODULES,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ChangePasswordDialogComponent
   ]
 })
 export class SharedModule {}

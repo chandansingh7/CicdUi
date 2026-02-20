@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
+import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 
 interface NavItem {
   label: string;
@@ -32,7 +34,11 @@ export class ShellComponent implements OnInit {
     { label: 'Users', icon: 'manage_accounts', route: '/app/users', adminOnly: true },
   ];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.username = this.authService.getUsername() || '';
@@ -45,6 +51,10 @@ export class ShellComponent implements OnInit {
       if (item.managerPlus) return this.authService.isAdminOrManager();
       return true;
     });
+  }
+
+  openChangePassword(): void {
+    this.dialog.open(ChangePasswordDialogComponent, { width: '440px', disableClose: true });
   }
 
   logout(): void {

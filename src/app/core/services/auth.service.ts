@@ -33,6 +33,13 @@ export class AuthService {
     );
   }
 
+  changePassword(request: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(
+      `${environment.apiUrl}/api/users/me/password`,
+      request
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
