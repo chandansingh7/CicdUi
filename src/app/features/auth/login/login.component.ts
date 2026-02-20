@@ -30,6 +30,7 @@ export class LoginComponent {
   }
 
   submit(): void {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';

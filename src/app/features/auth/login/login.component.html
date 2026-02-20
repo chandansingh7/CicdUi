@@ -14,7 +14,7 @@
           <mat-label>Username</mat-label>
           <input matInput formControlName="username" autocomplete="username">
           <mat-icon matPrefix>person</mat-icon>
-          <mat-error *ngIf="form.get('username')?.hasError('required')">Username is required</mat-error>
+          <mat-error *ngIf="form.get('username')?.touched && form.get('username')?.hasError('required')">Username is required</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -24,7 +24,7 @@
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">Password is required</mat-error>
         </mat-form-field>
 
         <div *ngIf="error" class="error-message">
