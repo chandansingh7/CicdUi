@@ -7,7 +7,7 @@ import { Role } from '../../../core/models/auth.models';
 
 export interface EditUserDialogData {
   user: UserResponse;
-  adminMode: boolean;   // true = admin editing any user; false = self-service (email only)
+  adminMode: boolean; // true = admin editing any user, false = self-service
 }
 
 @Component({
@@ -34,11 +34,17 @@ export class EditUserDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const u = this.data.user;
     this.form = this.fb.group({
-      email: [this.data.user.email, [Validators.required, Validators.email]],
+      firstName:       [u.firstName  || ''],
+      lastName:        [u.lastName   || ''],
+      email:           [u.email,       [Validators.required, Validators.email]],
+      phone:           [u.phone       || ''],
+      address:         [u.address     || ''],
+      deliveryAddress: [u.deliveryAddress || ''],
       ...(this.data.adminMode ? {
-        role:   [this.data.user.role,   Validators.required],
-        active: [this.data.user.active],
+        role:   [u.role,   Validators.required],
+        active: [u.active],
       } : {})
     });
   }
@@ -48,18 +54,31 @@ export class EditUserDialogComponent implements OnInit {
     if (this.form.invalid) return;
 
     this.loading = true;
+    const v = this.form.value;
     const call$ = this.data.adminMode
       ? this.userService.adminUpdate(this.data.user.id, {
-          email:  this.form.value.email,
-          role:   this.form.value.role,
-          active: this.form.value.active,
+          firstName:       v.firstName       || null,
+          lastName:        v.lastName        || null,
+          email:           v.email,
+          phone:           v.phone           || null,
+          address:         v.address         || null,
+          deliveryAddress: v.deliveryAddress || null,
+          role:            v.role,
+          active:          v.active,
         })
-      : this.userService.updateMe({ email: this.form.value.email });
+      : this.userService.updateMe({
+          firstName:       v.firstName       || null,
+          lastName:        v.lastName        || null,
+          email:           v.email,
+          phone:           v.phone           || null,
+          address:         v.address         || null,
+          deliveryAddress: v.deliveryAddress || null,
+        });
 
     call$.subscribe({
       next: res => {
         this.loading = false;
-        this.snackBar.open('User updated successfully!', 'Close', { duration: 3000 });
+        this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
         this.dialogRef.close(res.data);
       },
       error: err => {
@@ -69,11 +88,14 @@ export class EditUserDialogComponent implements OnInit {
     });
   }
 
-  getEmailError(): string {
-    const ctrl = this.form.get('email');
+  getError(field: string, label: string): string {
+    const ctrl = this.form.get(field);
     if (!ctrl?.touched) return '';
-    if (ctrl.hasError('required')) return 'Email is required';
+    if (ctrl.hasError('required')) return `${label} is required`;
     if (ctrl.hasError('email'))    return 'Invalid email format';
+    if (ctrl.hasError('maxlength')) {
+      return `${label} is too long`;
+    }
     return '';
   }
 }

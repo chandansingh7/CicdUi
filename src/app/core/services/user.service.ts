@@ -8,18 +8,33 @@ import { Role } from '../models/auth.models';
 export interface UserResponse {
   id: number;
   username: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string;
+  phone: string | null;
+  address: string | null;
+  deliveryAddress: string | null;
   role: Role;
   active: boolean;
   createdAt: string;
 }
 
 export interface UpdateProfileRequest {
+  firstName: string | null;
+  lastName: string | null;
   email: string;
+  phone: string | null;
+  address: string | null;
+  deliveryAddress: string | null;
 }
 
 export interface AdminUpdateUserRequest {
+  firstName: string | null;
+  lastName: string | null;
   email: string;
+  phone: string | null;
+  address: string | null;
+  deliveryAddress: string | null;
   role: Role;
   active: boolean;
 }
