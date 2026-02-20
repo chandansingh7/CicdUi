@@ -1,55 +1,59 @@
 .dialog-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   mat-icon { color: #1976d2; }
 }
 
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   padding-top: 4px;
 }
-
-.full-width { width: 100%; }
 
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 
   mat-form-field { width: 100%; }
-}
-
-.section-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 8px 0 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-
-  mat-icon { font-size: 18px; height: 18px; width: 18px; }
 }
 
 .active-toggle {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 0;
+  gap: 6px;
+  padding: 8px 0 0;
+
+  mat-divider { margin-bottom: 8px; }
 }
 
-.toggle-hint { font-size: 12px; color: #757575; padding-left: 2px; }
+.toggle-hint {
+  font-size: 11px;
+  color: #757575;
+  padding-left: 2px;
+}
 
-.btn-spinner { display: inline-block; margin-right: 6px; vertical-align: middle; }
+.btn-spinner {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
 
 mat-dialog-content {
-  min-width: 480px;
-  max-height: 70vh;
-  padding-top: 8px !important;
+  width: 580px;
+  max-height: 72vh;
+  padding-top: 4px !important;
+  overflow-y: auto;
 }
-mat-dialog-actions { padding: 16px 24px 16px !important; gap: 8px; }
 
-mat-divider { margin: 4px 0 8px; }
+mat-dialog-actions {
+  padding: 12px 24px !important;
+  gap: 8px;
+}
+
+/* Tighten Material field internals */
+::ng-deep .edit-form .mat-mdc-form-field-subscript-wrapper {
+  height: 14px;
+}
