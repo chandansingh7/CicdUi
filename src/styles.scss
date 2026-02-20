@@ -80,3 +80,31 @@ html, body {
   border-radius: v.$radius-md;
   overflow: hidden;
 }
+
+// ─── Snackbar Toasts ─────────────────────────────────────────────────────────
+.snack-success .mdc-snackbar__surface {
+  background: v.$color-success !important;
+  color: white !important;
+  border-radius: v.$radius-md !important;
+
+  .mat-mdc-snack-bar-label { color: white !important; font-weight: v.$font-weight-medium; }
+  button { color: rgba(255,255,255,0.8) !important; }
+}
+
+.snack-error .mdc-snackbar__surface {
+  background: v.$color-danger !important;
+  color: white !important;
+  border-radius: v.$radius-md !important;
+
+  .mat-mdc-snack-bar-label { color: white !important; font-weight: v.$font-weight-medium; }
+  button { color: rgba(255,255,255,0.8) !important; }
+}
+
+.snack-info .mdc-snackbar__surface {
+  background: v.$color-info !important;
+  color: white !important;
+  border-radius: v.$radius-md !important;
+
+  .mat-mdc-snack-bar-label { color: white !important; }
+  button { color: rgba(255,255,255,0.8) !important; }
+}

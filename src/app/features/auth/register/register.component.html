@@ -1,36 +1,84 @@
 <div class="auth-container">
   <mat-card class="auth-card">
-    <mat-card-header class="auth-header">
-      <div class="logo-area">
-        <mat-icon class="logo-icon">point_of_sale</mat-icon>
-        <h1>Create Account</h1>
-        <p>Start your free POS System account</p>
-      </div>
-    </mat-card-header>
+
+    <!-- Header -->
+    <div class="auth-header">
+      <mat-icon class="logo-icon">point_of_sale</mat-icon>
+      <h1>Create Account</h1>
+      <p>Join POS System — free to get started</p>
+    </div>
 
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+        <!-- ── Account Details ──────────────────────────────────────────── -->
+        <div class="section-label">
+          <mat-icon>person</mat-icon> Account Details
+        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
-          <input matInput formControlName="username" autocomplete="username">
+          <input matInput formControlName="username" autocomplete="username" placeholder="e.g. john_doe">
           <mat-icon matPrefix>badge</mat-icon>
-          <mat-hint>3–50 characters, used to sign in</mat-hint>
+          <mat-hint>3–50 characters · used to sign in</mat-hint>
           <mat-error>{{ getError('username') }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email address</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email">
+          <input matInput formControlName="email" type="email" autocomplete="email" placeholder="you@example.com">
           <mat-icon matPrefix>email</mat-icon>
           <mat-error>{{ getError('email') }}</mat-error>
         </mat-form-field>
+
+        <!-- ── Account Type ─────────────────────────────────────────────── -->
+        <div class="section-label mt">
+          <mat-icon>admin_panel_settings</mat-icon> Account Type
+          <span class="section-hint">Choose what this account can do</span>
+        </div>
+
+        <div class="role-grid">
+          <div
+            *ngFor="let card of roleCards"
+            class="role-card"
+            [class.selected]="form.get('role')?.value === card.value"
+            (click)="selectRole(card.value)"
+          >
+            <div class="role-card-top">
+              <div class="role-icon">
+                <mat-icon>{{ card.icon }}</mat-icon>
+              </div>
+              <div class="role-info">
+                <div class="role-name">{{ card.label }}</div>
+                <span class="role-badge" [ngClass]="card.badgeClass">{{ card.badge }}</span>
+              </div>
+              <mat-icon class="check-icon" *ngIf="form.get('role')?.value === card.value">check_circle</mat-icon>
+            </div>
+            <p class="role-desc">{{ card.description }}</p>
+            <ul class="role-perms">
+              <li *ngFor="let p of card.permissions">
+                <mat-icon>check</mat-icon> {{ p }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Admin note -->
+        <div class="info-banner">
+          <mat-icon>info</mat-icon>
+          <span>Admin accounts can only be created by an existing Admin via User Management.</span>
+        </div>
+
+        <!-- ── Password ─────────────────────────────────────────────────── -->
+        <div class="section-label mt">
+          <mat-icon>lock</mat-icon> Set Password
+        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
           <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-hint>Minimum 6 characters</mat-hint>
@@ -41,35 +89,49 @@
           <mat-label>Confirm password</mat-label>
           <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password">
           <mat-icon matPrefix>lock_reset</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="hideConfirm = !hideConfirm">
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirm = !hideConfirm" tabindex="-1">
             <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-error *ngIf="passwordMismatch">Passwords do not match</mat-error>
-          <mat-error *ngIf="!passwordMismatch">{{ getError('confirmPassword') }}</mat-error>
+          <mat-error *ngIf="!passwordMismatch && form.get('confirmPassword')?.touched && form.get('confirmPassword')?.hasError('required')">
+            Please confirm your password
+          </mat-error>
         </mat-form-field>
 
-        <div *ngIf="error" class="error-message">
+        <!-- ── Error Banner ─────────────────────────────────────────────── -->
+        <div *ngIf="error" class="error-banner">
           <mat-icon>error</mat-icon>
-          <span>{{ error }}</span>
+          <div>
+            <strong>Registration Failed</strong>
+            <p>{{ error }}</p>
+          </div>
         </div>
 
-        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading">
+        <!-- ── Submit ───────────────────────────────────────────────────── -->
+        <button
+          mat-raised-button color="primary"
+          type="submit"
+          class="full-width submit-btn"
+          [disabled]="loading"
+        >
           <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-          <mat-icon *ngIf="!loading">person_add</mat-icon>
-          <span>{{ loading ? 'Creating account...' : 'Create Account' }}</span>
+          <ng-container *ngIf="!loading">
+            <mat-icon>person_add</mat-icon>
+            Create {{ form.get('role')?.value === 'MANAGER' ? 'Manager' : 'Cashier' }} Account
+          </ng-container>
         </button>
-
-        <p class="terms-note">
-          By signing up you get a <strong>Cashier</strong> account.
-          Contact your administrator to request Manager or Admin access.
-        </p>
 
       </form>
     </mat-card-content>
 
-    <mat-card-actions class="auth-footer">
+    <div class="auth-footer">
       <span>Already have an account?</span>
       <a routerLink="/login" mat-button color="primary">Sign In</a>
-    </mat-card-actions>
+    </div>
+
   </mat-card>
+
+  <a routerLink="/" class="back-home">
+    <mat-icon>arrow_back</mat-icon> Back to home
+  </a>
 </div>
