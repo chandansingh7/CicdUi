@@ -75,10 +75,33 @@ html, body {
 .chip-pending     { background: v.$color-pending-bg !important; color: v.$color-pending !important; }
 .chip-cancelled   { background: v.$color-danger-bg !important;  color: v.$color-danger !important; }
 
-// ─── Material Table ──────────────────────────────────────────────────────────
+// ─── Material Table — global compact row heights ──────────────────────────────
 .mat-mdc-table {
   border-radius: v.$radius-md;
   overflow: hidden;
+}
+
+// Override MDC defaults: header row 56px → auto, data row 52px → auto
+// This removes the dead space above/below content inside every table row.
+.mat-mdc-header-row {
+  height: auto !important;
+  min-height: unset !important;
+}
+
+.mat-mdc-row {
+  height: auto !important;
+  min-height: unset !important;
+}
+
+// Uniform cell padding for all tables so rows feel tight but readable
+.mat-mdc-header-cell {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.mat-mdc-cell {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 // ─── Snackbar Toasts ─────────────────────────────────────────────────────────
