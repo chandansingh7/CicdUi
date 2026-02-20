@@ -55,7 +55,7 @@
             </button>
           </div>
         </th>
-        <td mat-cell *matCellDef="let i" [class.zero-qty]="i.quantity === 0"><strong>{{ i.quantity }}</strong></td>
+        <td mat-cell *matCellDef="let i" class="num-cell" [class.zero-qty]="i.quantity === 0"><strong>{{ i.quantity }}</strong></td>
       </ng-container>
 
       <ng-container matColumnDef="threshold">
@@ -69,7 +69,7 @@
             </button>
           </div>
         </th>
-        <td mat-cell *matCellDef="let i">{{ i.lowStockThreshold }}</td>
+        <td mat-cell *matCellDef="let i" class="num-cell">{{ i.lowStockThreshold }}</td>
       </ng-container>
 
       <ng-container matColumnDef="status">

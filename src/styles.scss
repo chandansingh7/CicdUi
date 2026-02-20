@@ -75,33 +75,93 @@ html, body {
 .chip-pending     { background: v.$color-pending-bg !important; color: v.$color-pending !important; }
 .chip-cancelled   { background: v.$color-danger-bg !important;  color: v.$color-danger !important; }
 
-// ─── Material Table — global compact row heights ──────────────────────────────
+// ─── Data Table — HCI Standards (NNG / Shopify Polaris / Stripe level) ────────
+//
+// Header:  40px, #FAFAFA bg, 12px semibold muted uppercase labels, 2px border
+// Rows:    44px min, 1px divider, 14px body text, hover #F5F7FA
+// Numbers: right-aligned + tabular-nums (prices, qty, IDs)
+// Chips:   22px pill, 11px semibold, semantic color pairs
+// Source:  Nielsen Norman Group, Shopify Polaris, Stripe Dashboard
+
 .mat-mdc-table {
   border-radius: v.$radius-md;
   overflow: hidden;
+  font-size: v.$font-size-base;   // 14px body text
 }
 
-// Override MDC defaults: header row 56px → auto, data row 52px → auto
-// This removes the dead space above/below content inside every table row.
+// ── Header row ───────────────────────────────────────────────────────────────
 .mat-mdc-header-row {
   height: auto !important;
-  min-height: unset !important;
+  min-height: 40px !important;
+  background: #fafafa !important;
+  border-bottom: 2px solid v.$color-border !important;
 }
 
-.mat-mdc-row {
-  height: auto !important;
-  min-height: unset !important;
-}
-
-// Uniform cell padding for all tables so rows feel tight but readable
 .mat-mdc-header-cell {
+  font-size: v.$font-size-sm !important;          // 12px
+  font-weight: v.$font-weight-semibold !important; // 600
+  color: v.$color-text-secondary !important;       // #616161
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
   padding-top: 4px !important;
   padding-bottom: 4px !important;
+  border-bottom: none !important;
+}
+
+// ── Data rows ────────────────────────────────────────────────────────────────
+.mat-mdc-row {
+  height: auto !important;
+  min-height: 44px !important;
+  border-bottom: 1px solid v.$color-divider !important;
+  transition: background v.$transition-fast;
+
+  &:hover { background: #f5f7fa !important; }
+  &:last-child { border-bottom: none !important; }
 }
 
 .mat-mdc-cell {
+  font-size: v.$font-size-base !important;  // 14px
+  color: v.$color-text-primary !important;  // #212121
   padding-top: 8px !important;
   padding-bottom: 8px !important;
+  border-bottom: none !important;
+}
+
+// ── Filter mat-select in table headers — match 11px compact text ─────────────
+// mat-select value/placeholder text does not inherit from mat-form-field-infix;
+// must be targeted directly on the trigger and value elements.
+.mat-mdc-header-cell {
+  .mat-mdc-select,
+  .mat-mdc-select-trigger,
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-placeholder {
+    font-size: 11px !important;
+    line-height: 1 !important;
+  }
+}
+
+// ── Numeric/price columns — right-aligned tabular numbers ────────────────────
+// Apply class="num-cell" to <td> and class="num-th" to <th> for price/qty/ID
+.num-cell, .price-cell {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 0.02em;
+}
+.num-header, .price-header {
+  text-align: right !important;
+}
+
+// ── Status chips — 22px pill, 11px semibold ──────────────────────────────────
+.mat-mdc-chip, mat-chip {
+  height: 22px !important;
+  min-height: 22px !important;
+  font-size: v.$font-size-xs !important;     // 11px
+  font-weight: v.$font-weight-semibold !important;
+  letter-spacing: 0.03em !important;
+  border-radius: v.$radius-pill !important;
+  padding: 0 8px !important;
+  line-height: 22px !important;
 }
 
 // ─── Snackbar Toasts ─────────────────────────────────────────────────────────
