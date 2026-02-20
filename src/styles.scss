@@ -1,1 +1,72 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$primary: mat.define-palette(mat.$indigo-palette, 700);
+$accent: mat.define-palette(mat.$blue-palette, A200);
+$warn: mat.define-palette(mat.$red-palette);
+
+$theme: mat.define-light-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($theme);
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #f5f7fa;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a237e;
+  }
+}
+
+.card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+}
+
+.mat-mdc-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.search-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.chip-in-stock { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.chip-low-stock { background: #fff3e0 !important; color: #e65100 !important; }
+.chip-out-of-stock { background: #ffebee !important; color: #c62828 !important; }
+.chip-completed { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.chip-pending { background: #e3f2fd !important; color: #1565c0 !important; }
+.chip-cancelled { background: #fce4ec !important; color: #880e4f !important; }
+
+.full-width { width: 100%; }
+
+.spacer { flex: 1; }
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }

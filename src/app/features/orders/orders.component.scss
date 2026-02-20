@@ -1,0 +1,29 @@
+.order-row { cursor: pointer; &:hover { background: #f5f5f5; } }
+
+.order-detail {
+  padding: 16px 24px;
+  background: #fafafa;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  th { font-weight: 600; background: #f0f0f0; }
+  tfoot tr { background: #fafafa; }
+  .total-row td { font-size: 15px; }
+}

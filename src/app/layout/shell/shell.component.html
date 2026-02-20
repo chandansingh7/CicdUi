@@ -1,0 +1,62 @@
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav #sidenav [opened]="sidenavOpened" mode="side" class="sidenav">
+    <div class="sidenav-header">
+      <mat-icon class="brand-icon">point_of_sale</mat-icon>
+      <div class="brand-text">
+        <span class="brand-name">POS System</span>
+        <span class="brand-sub">Management Console</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <nav class="nav-list">
+      <a *ngFor="let item of visibleNavItems"
+         [routerLink]="item.route"
+         routerLinkActive="active-link"
+         class="nav-item">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidenav-footer">
+      <mat-divider></mat-divider>
+      <div class="user-info">
+        <mat-icon>account_circle</mat-icon>
+        <div>
+          <div class="user-name">{{ username }}</div>
+          <div class="user-role">{{ role }}</div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="main-content">
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">POS System</span>
+      <span class="spacer"></span>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu>
+        <div class="menu-user-info">
+          <strong>{{ username }}</strong>
+          <small>{{ role }}</small>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

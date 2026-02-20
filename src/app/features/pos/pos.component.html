@@ -1,0 +1,152 @@
+<div class="page-header">
+  <h2>POS / Cashier</h2>
+</div>
+
+<div *ngIf="completedOrder" class="receipt-container">
+  <mat-card class="receipt-card">
+    <mat-card-content>
+      <div class="receipt-header">
+        <mat-icon class="success-icon">check_circle</mat-icon>
+        <h2>Order Confirmed!</h2>
+        <p>Order #{{ completedOrder.id }}</p>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="receipt-body">
+        <div class="receipt-row" *ngFor="let item of completedOrder.items">
+          <span>{{ item.productName }} x{{ item.quantity }}</span>
+          <span>${{ item.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="receipt-row"><span>Subtotal</span><span>${{ completedOrder.subtotal | number:'1.2-2' }}</span></div>
+        <div class="receipt-row"><span>Tax</span><span>${{ completedOrder.tax | number:'1.2-2' }}</span></div>
+        <div class="receipt-row" *ngIf="completedOrder.discount > 0"><span>Discount</span><span>-${{ completedOrder.discount | number:'1.2-2' }}</span></div>
+        <div class="receipt-row total-row"><span>TOTAL</span><span>${{ completedOrder.total | number:'1.2-2' }}</span></div>
+        <div class="receipt-row"><span>Payment</span><span>{{ completedOrder.paymentMethod }}</span></div>
+      </div>
+      <button mat-raised-button color="primary" class="full-width" style="margin-top:16px" (click)="newOrder()">
+        <mat-icon>add_shopping_cart</mat-icon> New Order
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="!completedOrder" class="pos-layout">
+  <div class="product-panel">
+    <div class="search-controls">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search products</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Name or SKU...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Scan barcode</mat-label>
+        <input matInput [formControl]="barcodeControl" placeholder="Scan or type barcode...">
+        <mat-icon matPrefix>qr_code_scanner</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="productsLoading" class="loading-center">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <div class="product-grid" *ngIf="!productsLoading">
+      <mat-card *ngFor="let product of products"
+                class="product-tile"
+                [class.out-of-stock]="product.quantity <= 0"
+                (click)="addToCart(product)">
+        <mat-card-content>
+          <mat-icon class="product-icon">inventory_2</mat-icon>
+          <div class="product-name">{{ product.name }}</div>
+          <div class="product-price">${{ product.price | number:'1.2-2' }}</div>
+          <div class="product-stock" [class.low]="product.quantity > 0 && product.quantity <= 10" [class.out]="product.quantity <= 0">
+            Stock: {{ product.quantity }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <div *ngIf="!products.length" class="no-products">
+        <mat-icon>inventory_2</mat-icon>
+        <p>No products found</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h3>Cart</h3>
+      <button mat-icon-button color="warn" (click)="clearCart()" [disabled]="!cart.length" matTooltip="Clear cart">
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+    </div>
+
+    <div class="cart-items" *ngIf="cart.length; else emptyCart">
+      <div *ngFor="let item of cart" class="cart-item">
+        <div class="item-info">
+          <span class="item-name">{{ item.product.name }}</span>
+          <span class="item-price">${{ item.product.price | number:'1.2-2' }}</span>
+        </div>
+        <div class="item-controls">
+          <button mat-icon-button (click)="updateQty(item, item.quantity - 1)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="qty">{{ item.quantity }}</span>
+          <button mat-icon-button (click)="updateQty(item, item.quantity + 1)">
+            <mat-icon>add</mat-icon>
+          </button>
+          <span class="item-subtotal">${{ item.subtotal | number:'1.2-2' }}</span>
+          <button mat-icon-button color="warn" (click)="removeFromCart(item)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyCart>
+      <div class="empty-cart">
+        <mat-icon>shopping_cart</mat-icon>
+        <p>Cart is empty</p>
+        <small>Click a product to add it</small>
+      </div>
+    </ng-template>
+
+    <div class="cart-footer" *ngIf="cart.length">
+      <mat-divider></mat-divider>
+
+      <mat-form-field appearance="outline" class="full-width" style="margin-top:12px">
+        <mat-label>Customer (optional)</mat-label>
+        <mat-select [(value)]="selectedCustomer">
+          <mat-option [value]="null">Walk-in Customer</mat-option>
+          <mat-option *ngFor="let c of customers" [value]="c">{{ c.name }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Payment Method</mat-label>
+        <mat-select [(value)]="paymentMethod">
+          <mat-option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.label }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>payment</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Discount ($)</mat-label>
+        <input matInput type="number" [(ngModel)]="discount" min="0">
+        <mat-icon matPrefix>discount</mat-icon>
+      </mat-form-field>
+
+      <div class="totals">
+        <div class="total-row-sm"><span>Subtotal</span><span>${{ subtotal | number:'1.2-2' }}</span></div>
+        <div class="total-row-sm"><span>Tax (10%)</span><span>${{ tax | number:'1.2-2' }}</span></div>
+        <div class="total-row-sm" *ngIf="discount > 0"><span>Discount</span><span>-${{ discount | number:'1.2-2' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="total-row-lg"><span>TOTAL</span><span>${{ total | number:'1.2-2' }}</span></div>
+      </div>
+
+      <button mat-raised-button color="primary" class="full-width checkout-btn" [disabled]="loading || !cart.length" (click)="placeOrder()">
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        <mat-icon *ngIf="!loading">point_of_sale</mat-icon>
+        <span>{{ loading ? 'Processing...' : 'Place Order' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

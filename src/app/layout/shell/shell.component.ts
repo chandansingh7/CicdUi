@@ -1,0 +1,53 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+
+interface NavItem {
+  label: string;
+  icon: string;
+  route: string;
+  adminOnly?: boolean;
+  managerPlus?: boolean;
+}
+
+@Component({
+  selector: 'app-shell',
+  templateUrl: './shell.component.html',
+  styleUrls: ['./shell.component.scss']
+})
+export class ShellComponent implements OnInit {
+  username = '';
+  role = '';
+  sidenavOpened = true;
+
+  navItems: NavItem[] = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
+    { label: 'POS / Cashier', icon: 'point_of_sale', route: '/app/pos' },
+    { label: 'Orders', icon: 'receipt_long', route: '/app/orders' },
+    { label: 'Products', icon: 'inventory_2', route: '/app/products' },
+    { label: 'Categories', icon: 'category', route: '/app/categories', managerPlus: true },
+    { label: 'Customers', icon: 'people', route: '/app/customers' },
+    { label: 'Inventory', icon: 'warehouse', route: '/app/inventory', managerPlus: true },
+    { label: 'Reports', icon: 'bar_chart', route: '/app/reports', managerPlus: true },
+  ];
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.username = this.authService.getUsername() || '';
+    this.role = this.authService.getRole() || '';
+  }
+
+  get visibleNavItems(): NavItem[] {
+    return this.navItems.filter(item => {
+      if (item.adminOnly) return this.authService.isAdmin();
+      if (item.managerPlus) return this.authService.isAdminOrManager();
+      return true;
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+}
