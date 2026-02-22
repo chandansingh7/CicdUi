@@ -114,7 +114,7 @@
     <div class="cart-footer" *ngIf="cart.length">
       <mat-divider></mat-divider>
 
-      <mat-form-field appearance="outline" class="full-width compact-field" style="margin-top:10px" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="full-width compact-field compact-field-first" subscriptSizing="dynamic">
         <mat-label>Customer (optional)</mat-label>
         <mat-select [(value)]="selectedCustomer">
           <mat-option [value]="null">Walk-in Customer</mat-option>
