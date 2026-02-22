@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CategoryResponse } from '../../core/models/category.models';
 import { ProductResponse } from '../../core/models/product.models';
+import { resolveProductImageUrl } from '../../core/utils/product-image.util';
 
 export interface ProductDialogData {
   product?: ProductResponse;
@@ -188,7 +189,7 @@ export class ProductDialogComponent implements OnInit, OnDestroy {
     });
 
     if (p?.imageUrl) {
-      this.previewUrl = p.imageUrl;
+      this.previewUrl = resolveProductImageUrl(p.imageUrl) ?? p.imageUrl;
     }
   }
 
@@ -213,7 +214,7 @@ export class ProductDialogComponent implements OnInit, OnDestroy {
     if (url) {
       this.selectedFile = null;
       this.revokeObjectUrl();
-      this.previewUrl = url;
+      this.previewUrl = resolveProductImageUrl(url) ?? url;
     } else {
       this.previewUrl = null;
     }

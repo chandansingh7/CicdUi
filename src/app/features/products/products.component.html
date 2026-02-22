@@ -42,7 +42,7 @@
           <span class="col-label-only">Image</span>
         </th>
         <td mat-cell *matCellDef="let p" class="img-cell">
-          <img *ngIf="hasImage(p)" [src]="p.imageUrl" [alt]="p.name"
+          <img *ngIf="hasImage(p)" [src]="p.imageUrl | productImageUrl" [alt]="p.name"
                class="product-thumb" (error)="onImageError(p.id)">
           <button *ngIf="!hasImage(p) && isAdminOrManager" mat-icon-button class="upload-img-btn"
                   (click)="openDialog(p)" matTooltip="Upload image">

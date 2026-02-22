@@ -114,13 +114,17 @@
   line-height: 1.2;
 }
 
-// Stepper and remove button: same height so − + × align across rows
+// Stepper, subtotal, and remove: same 24px height so − number + $ × align on one line
 .cart-item .item-stepper,
+.cart-item .item-subtotal,
 .cart-item .item-remove {
   flex-shrink: 0;
   height: 24px;
   display: flex;
   align-items: center;
+}
+.cart-item .item-stepper,
+.cart-item .item-remove {
   justify-content: center;
 }
 
@@ -158,7 +162,10 @@
   font-size: 12px;
   font-weight: t.$font-weight-semibold;
   min-width: 20px;
-  text-align: center;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   color: t.$color-text-primary;
 }
@@ -168,6 +175,10 @@
   font-weight: t.$font-weight-bold;
   color: t.$color-primary;
   min-width: 40px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   text-align: right;
   padding-right: 2px;
 }
@@ -188,19 +199,26 @@
   mat-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
 }
 
-// ── Smaller footer form fields ───────────────────────────────────────────────
+// ── Smaller footer dropdown and text box ─────────────────────────────────────
 .compact-field {
-  --mdc-outlined-text-field-container-height: 36px;
-  margin-bottom: 2px;
+  --mdc-outlined-text-field-container-height: 32px;
+  margin-bottom: 0;
   margin-top: 0;
 
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
-  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 12px; }
-  ::ng-deep .mat-mdc-form-field-infix { padding-top: 8px; padding-bottom: 8px; min-height: 20px; }
-  ::ng-deep .mat-mdc-select-value, ::ng-deep .mat-mdc-input-element {
-    font-size: 13px;
+  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 10px; }
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    min-height: 20px;
   }
-  ::ng-deep .mat-mdc-floating-label { font-size: 13px; }
+  ::ng-deep .mat-mdc-select-value,
+  ::ng-deep .mat-mdc-input-element {
+    font-size: 12px;
+  }
+  ::ng-deep .mat-mdc-floating-label { font-size: 12px; }
+  ::ng-deep .mat-mdc-form-field-icon-prefix { padding-right: 6px; }
+  ::ng-deep .mat-mdc-form-field-icon-prefix .mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
 .compact-field-first { margin-top: 6px; }
