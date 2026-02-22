@@ -12,6 +12,8 @@ import { ProductResponse } from '../../core/models/product.models';
 import { CategoryResponse } from '../../core/models/category.models';
 import { ProductDialogComponent } from './product-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { BulkUploadPreviewModalComponent, BulkUploadPreviewData } from './bulk-upload-preview-modal.component';
+import { parseBulkFile } from './bulk-upload-parser.util';
 
 @Component({
   selector: 'app-products',
@@ -30,6 +32,7 @@ export class ProductsComponent implements OnInit {
   pageSize = 10;
   loading = false;
   bulkUploading = false;
+  bulkPreviewLoading = false;
 
   searchControl  = new FormControl('');
   categoryFilter = new FormControl(null);
@@ -107,27 +110,30 @@ export class ProductsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    this.bulkUploading = true;
-    this.productService.bulkUpload(file).subscribe({
-      next: res => {
-        this.bulkUploading = false;
-        input.value = '';
-        const d = res.data;
-        if (!d) return;
-        const msg = `Bulk upload: ${d.successCount} created, ${d.failCount} failed.`;
-        this.snackBar.open(msg, 'Close', { duration: d.failCount ? 5000 : 3000 });
-        if (d.errors?.length) {
-          const details = d.errors.slice(0, 5).map(e => `Row ${e.row}: ${e.message}`).join('; ');
-          this.snackBar.open(details, 'Close', { duration: 8000 });
+    input.value = '';
+    const name = (file.name || '').toLowerCase();
+    if (!name.endsWith('.csv') && !name.endsWith('.xlsx') && !name.endsWith('.xls')) {
+      this.snackBar.open('Please select a CSV or Excel file', 'Close', { duration: 3000 });
+      return;
+    }
+    this.bulkPreviewLoading = true;
+    parseBulkFile(file).then(rows => {
+      this.bulkPreviewLoading = false;
+      const data: BulkUploadPreviewData = { file, rows, fileName: file.name };
+      this.dialog.open(BulkUploadPreviewModalComponent, {
+        width: '960px',
+        maxHeight: '90vh',
+        data,
+        disableClose: false
+      }).afterClosed().subscribe(uploaded => {
+        if (uploaded) {
+          this.loadProducts(0);
+          this.loadStats();
         }
-        this.loadProducts(0);
-        this.loadStats();
-      },
-      error: () => {
-        this.bulkUploading = false;
-        input.value = '';
-        this.snackBar.open('Bulk upload failed', 'Close', { duration: 4000 });
-      }
+      });
+    }).catch(() => {
+      this.bulkPreviewLoading = false;
+      this.snackBar.open('Could not read file. Use CSV or Excel format.', 'Close', { duration: 4000 });
     });
   }
 
@@ -290,6 +296,7 @@ export class ProductsComponent implements OnInit {
 
   get isAdmin(): boolean { return this.authService.isAdmin(); }
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
+  get canUseBulkUpload(): boolean { return !!this.authService.getUsername(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
 }

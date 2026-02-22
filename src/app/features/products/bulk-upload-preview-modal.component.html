@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>Bulk upload preview</h2>
+<mat-dialog-content>
+  <p class="preview-summary">
+    <strong>{{ data.fileName }}</strong> — {{ totalRows }} row(s)
+    <span *ngIf="errorCount > 0" class="error-count">{{ errorCount }} row(s) with errors</span>
+  </p>
+  <div class="table-wrap" *ngIf="data.rows.length">
+    <table mat-table [dataSource]="data.rows" class="preview-table">
+      <ng-container matColumnDef="rowIndex">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let r">{{ r.rowIndex }}</td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let r" [class.has-error]="r.errors.length">{{ r.name || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef>SKU</th>
+        <td mat-cell *matCellDef="let r">{{ r.sku || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let r">{{ r.price || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let r">{{ r.category || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="initialStock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let r">{{ r.initialStock ?? '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="lowStockThreshold">
+        <th mat-header-cell *matHeaderCellDef>Low stock</th>
+        <td mat-cell *matCellDef="let r">{{ r.lowStockThreshold ?? '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="errors">
+        <th mat-header-cell *matHeaderCellDef>Validation</th>
+        <td mat-cell *matCellDef="let r">
+          <span *ngIf="r.errors.length" class="error-msg">{{ r.errors.join('; ') }}</span>
+          <span *ngIf="!r.errors.length" class="ok">OK</span>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <p *ngIf="!data.rows.length" class="no-data">No data rows found.</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="uploading">Cancel</button>
+  <button mat-raised-button color="primary" (click)="upload()" [disabled]="!isValid || uploading">
+    <mat-spinner diameter="20" *ngIf="uploading"></mat-spinner>
+    <mat-icon *ngIf="!uploading">upload</mat-icon>
+    {{ uploading ? 'Uploading...' : 'Upload' }}
+  </button>
+</mat-dialog-actions>

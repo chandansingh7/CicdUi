@@ -1,0 +1,152 @@
+import { BulkPreviewRow } from './bulk-upload-preview-modal.component';
+
+const COL_NAME = 0;
+const COL_SKU = 1;
+const COL_BARCODE = 2;
+const COL_PRICE = 3;
+const COL_CATEGORY = 4;
+const COL_INITIAL_STOCK = 5;
+const COL_LOW_STOCK_THRESHOLD = 6;
+
+function parseCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      inQuotes = !inQuotes;
+    } else if (c === ',' && !inQuotes) {
+      out.push(cur.trim().replace(/""/g, '"'));
+      cur = '';
+    } else if (c === '\n' || c === '\r') {
+      break;
+    } else {
+      cur += c;
+    }
+  }
+  out.push(cur.trim().replace(/""/g, '"'));
+  return out;
+}
+
+function validateRow(cells: string[], rowIndex: number): string[] {
+  const errors: string[] = [];
+  const name = (cells[COL_NAME] ?? '').trim();
+  if (!name) errors.push('Name required');
+  const priceStr = (cells[COL_PRICE] ?? '').trim();
+  if (priceStr) {
+    const num = parseFloat(priceStr);
+    if (Number.isNaN(num)) errors.push('Invalid price');
+    else if (num < 0) errors.push('Price must be ≥ 0');
+  } else errors.push('Price required');
+  const stockStr = (cells[COL_INITIAL_STOCK] ?? '').trim();
+  if (stockStr) {
+    const n = parseInt(stockStr, 10);
+    if (Number.isNaN(n) || n < 0) errors.push('Initial stock must be ≥ 0');
+  }
+  const lowStr = (cells[COL_LOW_STOCK_THRESHOLD] ?? '').trim();
+  if (lowStr) {
+    const n = parseInt(lowStr, 10);
+    if (Number.isNaN(n) || n < 0) errors.push('Low stock threshold must be ≥ 0');
+  }
+  return errors;
+}
+
+function cellAt(cells: string[], index: number): string {
+  if (index >= cells.length) return '';
+  const s = cells[index];
+  return s != null ? String(s).trim() : '';
+}
+
+export function parseCsvFile(file: File): Promise<BulkPreviewRow[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = (reader.result as string) || '';
+      const lines = text.split(/\r?\n/).filter(l => l.length > 0);
+      if (lines.length < 2) {
+        resolve([]);
+        return;
+      }
+      const rows: BulkPreviewRow[] = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cells = parseCsvLine(lines[i]);
+        if (cells.length <= COL_NAME) continue;
+        const nameVal = cellAt(cells, COL_NAME);
+        if (!nameVal) continue;
+        const rowIndex = i + 1;
+        const errors = validateRow(cells, rowIndex);
+        rows.push({
+          rowIndex,
+          name: cellAt(cells, COL_NAME),
+          sku: cellAt(cells, COL_SKU),
+          barcode: cellAt(cells, COL_BARCODE),
+          price: cellAt(cells, COL_PRICE),
+          category: cellAt(cells, COL_CATEGORY),
+          initialStock: cellAt(cells, COL_INITIAL_STOCK),
+          lowStockThreshold: cellAt(cells, COL_LOW_STOCK_THRESHOLD),
+          errors
+        });
+      }
+      resolve(rows);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+// Dynamic import to avoid loading xlsx until needed
+async function loadXlsx(): Promise<typeof import('xlsx')> {
+  const mod = await import('xlsx');
+  return mod;
+}
+
+export async function parseExcelFile(file: File): Promise<BulkPreviewRow[]> {
+  const XLSX = await loadXlsx();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const wb = XLSX.read(reader.result, { type: 'array' });
+        const firstSheetName = wb.SheetNames[0];
+        if (!firstSheetName) {
+          resolve([]);
+          return;
+        }
+        const sheet = wb.Sheets[firstSheetName];
+        const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as string[][];
+        const rows: BulkPreviewRow[] = [];
+        for (let i = 1; i < rawRows.length; i++) {
+          const raw = rawRows[i] ?? [];
+          const cells = Array.isArray(raw) ? raw.map(c => (c != null ? String(c).trim() : '')) : [];
+          const nameVal = (cells[COL_NAME] ?? '').trim();
+          if (!nameVal) continue;
+          const rowIndex = i + 1;
+          const errors = validateRow(cells, rowIndex);
+          rows.push({
+            rowIndex,
+            name: cells[COL_NAME] ?? '',
+            sku: cells[COL_SKU] ?? '',
+            barcode: cells[COL_BARCODE] ?? '',
+            price: cells[COL_PRICE] ?? '',
+            category: cells[COL_CATEGORY] ?? '',
+            initialStock: cells[COL_INITIAL_STOCK] ?? '',
+            lowStockThreshold: cells[COL_LOW_STOCK_THRESHOLD] ?? '',
+            errors
+          });
+        }
+        resolve(rows);
+      } catch (e) {
+        reject(e);
+      }
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+export async function parseBulkFile(file: File): Promise<BulkPreviewRow[]> {
+  const name = (file.name || '').toLowerCase();
+  if (name.endsWith('.csv')) return parseCsvFile(file);
+  return parseExcelFile(file);
+}
