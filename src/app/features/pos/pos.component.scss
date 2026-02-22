@@ -9,12 +9,13 @@
   @include t.sm { grid-template-columns: 1fr; }
 }
 
-.product-panel { display: flex; flex-direction: column; overflow: hidden; }
+.product-panel { display: flex; flex-direction: column; overflow: visible; }
 
 .search-controls {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: t.$space-md;
+  padding-top: 8px;          // room for floating labels above the input border
   margin-bottom: t.$space-md;
 
   @include t.xs { grid-template-columns: 1fr; }
