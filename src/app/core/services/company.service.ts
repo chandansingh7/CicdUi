@@ -16,19 +16,27 @@ export class CompanyService {
   get(forceRefresh = false): Observable<ApiResponse<CompanyResponse>> {
     const req = this.http.get<ApiResponse<CompanyResponse>>(this.url);
     if (!forceRefresh) {
-      return req.pipe(tap(res => { this.cached = res.data ?? null; }));
+      return req.pipe(tap(res => { this.applyCached(res.data); }));
     }
     this.cached = null;
-    return req.pipe(tap(res => { this.cached = res.data ?? null; }));
+    return req.pipe(tap(res => { this.applyCached(res.data); }));
   }
 
   getCached(): CompanyResponse | null {
     return this.cached;
   }
 
+  private applyCached(data: CompanyResponse | null | undefined): void {
+    this.cached = data ?? null;
+    if (data?.faviconUrl && typeof document !== 'undefined') {
+      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null;
+      if (link) link.href = data.faviconUrl;
+    }
+  }
+
   update(req: CompanyRequest): Observable<ApiResponse<CompanyResponse>> {
     return this.http.put<ApiResponse<CompanyResponse>>(this.url, req).pipe(
-      tap(res => { this.cached = res.data ?? null; })
+      tap(res => { this.applyCached(res.data); })
     );
   }
 
