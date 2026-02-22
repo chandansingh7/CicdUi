@@ -27,7 +27,6 @@ export class SettingsComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       name: ['', [Validators.required]],
-      logoUrl: [''],
       address: [''],
       phone: [''],
       email: [''],
@@ -56,7 +55,6 @@ export class SettingsComponent implements OnInit {
         if (this.company) {
           this.form.patchValue({
             name: this.company.name ?? '',
-            logoUrl: this.company.logoUrl ?? '',
             address: this.company.address ?? '',
             phone: this.company.phone ?? '',
             email: this.company.email ?? '',
@@ -77,7 +75,12 @@ export class SettingsComponent implements OnInit {
   save(): void {
     if (this.form.invalid) return;
     this.saving = true;
-    this.companyService.update(this.form.value).subscribe({
+    const payload = {
+      ...this.form.value,
+      logoUrl: this.company?.logoUrl,
+      faviconUrl: this.company?.faviconUrl
+    };
+    this.companyService.update(payload).subscribe({
       next: () => {
         this.saving = false;
         this.snackBar.open('Settings saved', 'Close', { duration: 3000 });
@@ -85,6 +88,52 @@ export class SettingsComponent implements OnInit {
       error: () => {
         this.saving = false;
         this.snackBar.open('Failed to save settings', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    input.value = '';
+    if (!file.type.startsWith('image/')) {
+      this.snackBar.open('Please select an image (PNG, JPG, etc.)', 'Close', { duration: 3000 });
+      return;
+    }
+    this.saving = true;
+    this.companyService.uploadLogo(file).subscribe({
+      next: res => {
+        this.saving = false;
+        this.company = res.data ?? this.company;
+        this.snackBar.open('Logo uploaded', 'Close', { duration: 3000 });
+      },
+      error: err => {
+        this.saving = false;
+        this.snackBar.open(err.error?.message || 'Logo upload failed', 'Close', { duration: 4000 });
+      }
+    });
+  }
+
+  onFaviconSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    input.value = '';
+    if (!file.type.startsWith('image/')) {
+      this.snackBar.open('Please select an image (PNG, ICO, etc.)', 'Close', { duration: 3000 });
+      return;
+    }
+    this.saving = true;
+    this.companyService.uploadFavicon(file).subscribe({
+      next: res => {
+        this.saving = false;
+        this.company = res.data ?? this.company;
+        this.snackBar.open('Favicon uploaded', 'Close', { duration: 3000 });
+      },
+      error: err => {
+        this.saving = false;
+        this.snackBar.open(err.error?.message || 'Favicon upload failed', 'Close', { duration: 4000 });
       }
     });
   }

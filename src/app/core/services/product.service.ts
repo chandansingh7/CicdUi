@@ -16,6 +16,7 @@ export interface ProductStats {
 export interface BulkUploadResult {
   totalRows: number;
   successCount: number;
+  updatedCount?: number;
   failCount: number;
   errors: { row: number; field: string; message: string }[];
 }
@@ -62,6 +63,12 @@ export class ProductService {
   getStats(): Observable<ApiResponse<ProductStats>> {
     return this.http.get<ApiResponse<ProductStats>>(`${this.url}/stats`,
       { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
+  }
+
+  /** Check which SKUs already exist; returns list of existing SKUs. */
+  bulkCheckSkus(skus: string[]): Observable<ApiResponse<string[]>> {
+    const list = (skus || []).filter(s => s != null && String(s).trim() !== '');
+    return this.http.post<ApiResponse<string[]>>(`${this.url}/bulk-check`, list);
   }
 
   bulkUpload(file: File): Observable<ApiResponse<BulkUploadResult>> {

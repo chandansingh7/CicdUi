@@ -7,3 +7,31 @@
 .full-width { width: 100%; }
 .card { margin-bottom: 24px; }
 .loading-center { display: flex; justify-content: center; padding: 48px; }
+
+.upload-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.upload-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.upload-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+.upload-preview {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+.preview-img {
+  object-fit: contain;
+  &.logo-preview { max-height: 48px; max-width: 160px; }
+  &.favicon-preview { max-height: 32px; max-width: 32px; }
+}
+.upload-actions button mat-icon { margin-right: 4px; vertical-align: middle; }

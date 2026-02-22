@@ -2,6 +2,7 @@ export interface CompanyResponse {
   id: number;
   name: string;
   logoUrl?: string;
+  faviconUrl?: string;
   address?: string;
   phone?: string;
   email?: string;
@@ -15,6 +16,7 @@ export interface CompanyResponse {
 export interface CompanyRequest {
   name: string;
   logoUrl?: string;
+  faviconUrl?: string;
   address?: string;
   phone?: string;
   email?: string;

@@ -2,6 +2,7 @@
   margin-bottom: 12px;
   font-size: 14px;
   .error-count { color: var(--color-warn, #ed6c02); margin-left: 8px; }
+  .update-count { color: var(--color-primary, #1565c0); margin-left: 8px; }
 }
 .table-wrap {
   max-height: 60vh;
@@ -13,6 +14,7 @@
   th, td { padding: 8px 12px; font-size: 13px; }
   .has-error { background: rgba(211, 47, 47, 0.06); }
   .error-msg { color: var(--color-danger, #c62828); font-size: 12px; }
+  .sku-exists { color: var(--color-primary, #1565c0); font-size: 12px; }
   .ok { color: var(--color-success, #2e7d32); }
   .actions-cell {
     white-space: nowrap;

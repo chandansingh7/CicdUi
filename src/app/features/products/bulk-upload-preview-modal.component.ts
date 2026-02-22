@@ -17,6 +17,8 @@ export interface BulkPreviewRow {
   initialStock: string;
   lowStockThreshold: string;
   errors: string[];
+  /** Set after bulk-check: true if this SKU already exists (row will update existing product). */
+  skuExists?: boolean;
 }
 
 export interface BulkUploadPreviewData {
@@ -30,10 +32,11 @@ export interface BulkUploadPreviewData {
   templateUrl: './bulk-upload-preview-modal.component.html',
   styleUrls: ['./bulk-upload-preview-modal.component.scss']
 })
-export class BulkUploadPreviewModalComponent {
+export class BulkUploadPreviewModalComponent implements OnInit {
   displayedColumns = ['rowIndex', 'name', 'sku', 'price', 'category', 'initialStock', 'lowStockThreshold', 'errors', 'actions'];
   dataSource = new MatTableDataSource<BulkPreviewRow>([]);
   uploading = false;
+  checkingSkus = false;
 
   get isValid(): boolean {
     return this.data.rows.length > 0 && this.data.rows.every(r => r.errors.length === 0);
@@ -47,6 +50,10 @@ export class BulkUploadPreviewModalComponent {
     return this.data.rows.filter(r => r.errors.length > 0).length;
   }
 
+  get updateCount(): number {
+    return this.data.rows.filter(r => r.skuExists).length;
+  }
+
   constructor(
     private dialogRef: MatDialogRef<BulkUploadPreviewModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BulkUploadPreviewData,
@@ -57,8 +64,31 @@ export class BulkUploadPreviewModalComponent {
     this.dataSource.data = this.data.rows;
   }
 
+  ngOnInit(): void {
+    this.loadExistingSkus();
+  }
+
   refreshTable(): void {
     this.dataSource.data = [...this.data.rows];
+  }
+
+  loadExistingSkus(): void {
+    const skus = this.data.rows
+      .map(r => (r.sku || '').trim())
+      .filter(s => s.length > 0);
+    if (skus.length === 0) return;
+    this.checkingSkus = true;
+    this.productService.bulkCheckSkus(skus).subscribe({
+      next: res => {
+        this.checkingSkus = false;
+        const existingSet = new Set((res.data || []) as string[]);
+        this.data.rows.forEach(r => {
+          (r as BulkPreviewRow).skuExists = existingSet.has((r.sku || '').trim());
+        });
+        this.refreshTable();
+      },
+      error: () => { this.checkingSkus = false; }
+    });
   }
 
   cancel(): void {
@@ -86,6 +116,7 @@ export class BulkUploadPreviewModalComponent {
       updated.rowIndex = row.rowIndex;
       this.data.rows[idx] = updated;
       this.refreshTable();
+      this.loadExistingSkus();
     });
   }
 
@@ -102,7 +133,11 @@ export class BulkUploadPreviewModalComponent {
         this.uploading = false;
         const d = res.data;
         if (d) {
-          const msg = `Bulk upload: ${d.successCount} created, ${d.failCount} failed.`;
+          const updated = d.updatedCount ?? 0;
+          const parts = [`${d.successCount} created`];
+          if (updated > 0) parts.push(`${updated} updated`);
+          parts.push(`${d.failCount} failed`);
+          const msg = `Bulk upload: ${parts.join(', ')}.`;
           this.snackBar.open(msg, 'Close', { duration: d.failCount ? 5000 : 3000 });
           if (d.errors?.length) {
             const details = d.errors.slice(0, 5).map(e => `Row ${e.row}: ${e.message}`).join('; ');

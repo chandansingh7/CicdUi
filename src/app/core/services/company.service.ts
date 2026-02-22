@@ -31,4 +31,20 @@ export class CompanyService {
       tap(res => { this.cached = res.data ?? null; })
     );
   }
+
+  uploadLogo(file: File): Observable<ApiResponse<CompanyResponse>> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<ApiResponse<CompanyResponse>>(`${this.url}/logo`, form).pipe(
+      tap(res => { this.applyCached(res.data); })
+    );
+  }
+
+  uploadFavicon(file: File): Observable<ApiResponse<CompanyResponse>> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<ApiResponse<CompanyResponse>>(`${this.url}/favicon`, form).pipe(
+      tap(res => { this.applyCached(res.data); })
+    );
+  }
 }
