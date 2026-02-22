@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -58,7 +58,8 @@ export class ProductsComponent implements OnInit {
     private categoryService: CategoryService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -73,7 +74,12 @@ export class ProductsComponent implements OnInit {
   }
 
   loadStats(): void {
-    this.productService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
+    this.productService.getStats().subscribe({
+      next: res => {
+        this.stats = res.data ?? null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   downloadTemplate(): void {
