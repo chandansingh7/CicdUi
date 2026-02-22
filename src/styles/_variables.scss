@@ -47,10 +47,12 @@ $sidenav-hover-bg:     rgba(255, 255, 255, 0.08);
 $sidenav-width:        260px;
 
 // ─── Stat Card Backgrounds ───────────────────────────────────────────────────
-$card-bg-orders:       #1a237e;
-$card-bg-revenue:      #1b5e20;
-$card-bg-average:      #006064;
-$card-bg-alert:        #bf360c;
+$card-bg-orders:          #1a237e;
+$card-bg-revenue:         #1b5e20;
+$card-bg-average:         #006064;
+$card-bg-alert:           #bf360c;
+$card-bg-monthly-orders:  #4527a0;   // deep purple — monthly orders
+$card-bg-monthly-revenue: #00695c;   // dark teal   — monthly revenue
 
 // ─── Spacing ─────────────────────────────────────────────────────────────────
 $space-xs:   4px;

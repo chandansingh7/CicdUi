@@ -1,29 +1,327 @@
 @use 'theme' as t;
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: t.$space-md;
+// ── Page header ───────────────────────────────────────────────────────────────
+.page-header {
+  @include t.flex-between;
+  margin-bottom: t.$space-lg;
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: t.$space-md;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: t.$font-size-xl;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-primary;
+  }
+
+  .period-badge {
+    font-size: t.$font-size-sm;
+    color: t.$color-text-secondary;
+  }
+
+  .pos-btn { gap: 6px; }
 }
 
+// ── KPI grid: 6 cards, 3 on desktop / 2 on tablet / 1 on mobile ──────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: t.$space-md;
+
+  @media (max-width: 1280px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+}
+
+// ── Stat card base ────────────────────────────────────────────────────────────
 .stat-card {
   border-radius: t.$radius-lg !important;
+  cursor: default;
+  transition: t.$transition-base;
+
+  &.clickable { cursor: pointer; &:hover { filter: brightness(1.08); } }
 
   mat-card-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: t.$space-lg !important;
-    gap: t.$space-sm;
+    gap: 4px;
   }
 }
 
-// Each card colour references the single variable
-.primary-card { @include t.stat-card(t.$card-bg-orders); }
-.success-card { @include t.stat-card(t.$card-bg-revenue); }
-.accent-card  { @include t.stat-card(t.$card-bg-average); }
-.warn-card    { @include t.stat-card(t.$card-bg-alert); }
+.primary-card        { @include t.stat-card(t.$card-bg-orders); }
+.success-card        { @include t.stat-card(t.$card-bg-revenue); }
+.accent-card         { @include t.stat-card(t.$card-bg-average); }
+.monthly-orders-card { @include t.stat-card(t.$card-bg-monthly-orders); }
+.monthly-revenue-card{ @include t.stat-card(t.$card-bg-monthly-revenue); }
+.warn-card           { @include t.stat-card(t.$card-bg-alert); }
+
+.stat-sub {
+  font-size: 10px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
+// ── Two-panel layout ──────────────────────────────────────────────────────────
+.two-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: t.$space-md;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.mt-16 { margin-top: t.$space-md; }
+
+// ── Panel cards ───────────────────────────────────────────────────────────────
+.panel-card {
+  border-radius: t.$radius-lg !important;
+  box-shadow: t.$shadow-md !important;
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: t.$space-md t.$space-lg 0 !important;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px !important;
+      font-weight: t.$font-weight-semibold !important;
+      margin: 0 !important;
+    }
+  }
+
+  mat-card-content {
+    padding: t.$space-sm t.$space-lg t.$space-md !important;
+  }
+}
+
+.section-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: t.$color-primary;
+
+  &.warn-icon { color: t.$color-warn; }
+}
+
+.card-sub {
+  font-size: t.$font-size-xs;
+  color: t.$color-text-muted;
+}
+
+.card-link {
+  font-size: t.$font-size-xs;
+  color: t.$color-primary-light;
+  text-decoration: none;
+  font-weight: t.$font-weight-medium;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Top Products — bar chart rows ─────────────────────────────────────────────
+.product-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rank {
+  width: 18px;
+  font-size: 11px;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-muted;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: t.$color-divider;
+  border-radius: t.$radius-sm;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, t.$color-primary 0%, t.$color-primary-light 100%);
+  border-radius: t.$radius-sm;
+  transition: width 0.6s ease;
+}
+
+.bar-label {
+  position: absolute;
+  left: 8px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: t.$font-weight-medium;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 16px);
+  z-index: 1;
+  mix-blend-mode: normal;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.units-badge {
+  font-size: 12px;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  min-width: 24px;
+  text-align: right;
+}
+
+// ── Stock Alert list ──────────────────────────────────────────────────────────
+.stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.stock-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid t.$color-divider;
+
+  &:last-child { border-bottom: none; }
+}
+
+.stock-name {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .product-name {
+    font-size: 13px;
+    font-weight: t.$font-weight-medium;
+    color: t.$color-text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  .sku {
+    font-size: 10px;
+    color: t.$color-text-muted;
+  }
+}
+
+.stock-qty {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+
+  .qty {
+    font-size: 14px;
+    font-weight: t.$font-weight-bold;
+    color: t.$color-warn;
+
+    &.out { color: t.$color-danger; }
+  }
+
+  .threshold {
+    font-size: 11px;
+    color: t.$color-text-muted;
+  }
+}
+
+.see-more {
+  font-size: 11px;
+  color: t.$color-text-muted;
+  margin-top: t.$space-sm;
+  text-align: center;
+
+  a { color: t.$color-primary-light; }
+}
+
+// ── Status chips ──────────────────────────────────────────────────────────────
+.status-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: t.$radius-pill;
+  font-size: 11px;
+  font-weight: t.$font-weight-semibold;
+  white-space: nowrap;
+
+  &.chip-success { background: t.$color-success-bg; color: t.$color-success; }
+  &.chip-danger  { background: t.$color-danger-bg;  color: t.$color-danger;  }
+  &.chip-warn    { background: t.$color-warn-bg;    color: t.$color-warn;    }
+  &.chip-info    { background: t.$color-info-bg;    color: t.$color-info;    }
+}
+
+// ── Recent Orders table ───────────────────────────────────────────────────────
+.orders-table {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.order-id {
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-primary;
+  font-size: 13px;
+}
+
+.payment-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .pay-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: t.$color-text-secondary;
+  }
+}
+
+.muted { color: t.$color-text-muted; font-size: 12px; }
+
+// ── Mini empty states ─────────────────────────────────────────────────────────
+.mini-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: t.$space-xl t.$space-lg;
+  color: t.$color-text-muted;
+  text-align: center;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: t.$color-border;
+    margin-bottom: t.$space-sm;
+  }
+
+  p { margin: 0; font-size: t.$font-size-sm; }
+
+  &.success mat-icon { color: #a5d6a7; }
+}
 
 .loading-center { @include t.loading-center; }
 
-.empty-state mat-card-content { @include t.empty-state; }
+.full-width { width: 100%; }

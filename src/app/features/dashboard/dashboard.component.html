@@ -1,27 +1,39 @@
+<!-- ── Page Header ──────────────────────────────────────────────────────────── -->
 <div class="page-header">
-  <h2>Dashboard</h2>
-  <span class="text-muted">{{ today | date:'fullDate' }}</span>
+  <div class="header-left">
+    <h2>Dashboard</h2>
+    <span class="period-badge">{{ today | date:'EEEE, d MMMM yyyy' }}</span>
+  </div>
+  <a routerLink="/app/pos" mat-raised-button color="primary" class="pos-btn">
+    <mat-icon>point_of_sale</mat-icon> Open POS
+  </a>
 </div>
 
+<!-- ── Loading ──────────────────────────────────────────────────────────────── -->
 <div *ngIf="loading" class="loading-center">
   <mat-spinner diameter="48"></mat-spinner>
 </div>
 
-<div *ngIf="!loading">
-  <div class="stats-grid">
+<ng-container *ngIf="!loading">
+
+  <!-- ── KPI Cards — 6 across ─────────────────────────────────────────────── -->
+  <div class="kpi-grid">
+
     <mat-card class="stat-card primary-card">
       <mat-card-content>
         <mat-icon>receipt_long</mat-icon>
         <div class="stat-value">{{ dailyReport?.totalOrders || 0 }}</div>
         <div class="stat-label">Today's Orders</div>
+        <div class="stat-sub">{{ today | date:'d MMM' }}</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card success-card">
       <mat-card-content>
         <mat-icon>payments</mat-icon>
-        <div class="stat-value">${{ (dailyReport?.totalRevenue || 0) | number:'1.2-2' }}</div>
+        <div class="stat-value">${{ (dailyReport?.totalRevenue || 0) | number:'1.0-0' }}</div>
         <div class="stat-label">Today's Revenue</div>
+        <div class="stat-sub">{{ today | date:'d MMM' }}</div>
       </mat-card-content>
     </mat-card>
 
@@ -30,46 +42,197 @@
         <mat-icon>trending_up</mat-icon>
         <div class="stat-value">${{ (dailyReport?.averageOrderValue || 0) | number:'1.2-2' }}</div>
         <div class="stat-label">Avg. Order Value</div>
+        <div class="stat-sub">Today</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card warn-card">
+    <mat-card class="stat-card monthly-orders-card">
       <mat-card-content>
-        <mat-icon>warning</mat-icon>
-        <div class="stat-value">{{ lowStockCount }}</div>
-        <div class="stat-label">Low Stock Alerts</div>
+        <mat-icon>calendar_month</mat-icon>
+        <div class="stat-value">{{ monthlyReport?.totalOrders || 0 }}</div>
+        <div class="stat-label">Monthly Orders</div>
+        <div class="stat-sub">{{ currentMonth }}</div>
       </mat-card-content>
     </mat-card>
+
+    <mat-card class="stat-card monthly-revenue-card">
+      <mat-card-content>
+        <mat-icon>bar_chart</mat-icon>
+        <div class="stat-value">${{ (monthlyReport?.totalRevenue || 0) | number:'1.0-0' }}</div>
+        <div class="stat-label">Monthly Revenue</div>
+        <div class="stat-sub">{{ currentMonth }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card warn-card" [class.clickable]="lowStockItems.length > 0"
+              [routerLink]="lowStockItems.length > 0 ? '/app/inventory' : null">
+      <mat-card-content>
+        <mat-icon>{{ lowStockItems.length === 0 ? 'check_circle' : 'warning' }}</mat-icon>
+        <div class="stat-value">{{ lowStockItems.length }}</div>
+        <div class="stat-label">Low Stock Alerts</div>
+        <div class="stat-sub">{{ lowStockItems.length > 0 ? 'Click to review' : 'All good!' }}</div>
+      </mat-card-content>
+    </mat-card>
+
   </div>
 
-  <mat-card class="card mt-16" *ngIf="dailyReport?.topProducts?.length">
+  <!-- ── Middle Section: Top Products + Low Stock Items ────────────────────── -->
+  <div class="two-panel mt-16">
+
+    <!-- Top Products Today -->
+    <mat-card class="panel-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">emoji_events</mat-icon>
+          Top Products Today
+        </mat-card-title>
+        <span class="card-sub">{{ today | date:'d MMM' }}</span>
+      </mat-card-header>
+      <mat-card-content>
+
+        <ng-container *ngIf="dailyReport?.topProducts?.length; else noProducts">
+          <div class="product-bars">
+            <div *ngFor="let item of dailyReport!.topProducts; let i = index" class="bar-row">
+              <span class="rank">{{ i + 1 }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="item.unitsSold / maxUnits * 100"></div>
+                <span class="bar-label">{{ item.productName }}</span>
+              </div>
+              <span class="units-badge">{{ item.unitsSold }}</span>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noProducts>
+          <div class="mini-empty">
+            <mat-icon>bar_chart</mat-icon>
+            <p>No sales recorded today yet.</p>
+          </div>
+        </ng-template>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Low Stock Items -->
+    <mat-card class="panel-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon warn-icon">inventory_2</mat-icon>
+          Stock Alerts
+        </mat-card-title>
+        <a routerLink="/app/inventory" class="card-link">Manage →</a>
+      </mat-card-header>
+      <mat-card-content>
+
+        <ng-container *ngIf="lowStockItems.length > 0; else noAlerts">
+          <div class="stock-list">
+            <div *ngFor="let item of lowStockItems.slice(0, 8)" class="stock-row">
+              <div class="stock-name">
+                <span class="product-name">{{ item.productName }}</span>
+                <span class="sku">{{ item.productSku }}</span>
+              </div>
+              <div class="stock-qty">
+                <span class="qty" [class.out]="item.stockStatus === 'OUT_OF_STOCK'">
+                  {{ item.quantity }}
+                </span>
+                <span class="threshold">/ {{ item.lowStockThreshold }}</span>
+              </div>
+              <span class="status-chip" [ngClass]="item.stockStatus === 'OUT_OF_STOCK' ? 'chip-danger' : 'chip-warn'">
+                {{ stockStatusLabel(item.stockStatus) }}
+              </span>
+            </div>
+          </div>
+          <div *ngIf="lowStockItems.length > 8" class="see-more">
+            +{{ lowStockItems.length - 8 }} more — <a routerLink="/app/inventory">View all</a>
+          </div>
+        </ng-container>
+
+        <ng-template #noAlerts>
+          <div class="mini-empty success">
+            <mat-icon>check_circle</mat-icon>
+            <p>All items are well stocked.</p>
+          </div>
+        </ng-template>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- ── Recent Orders ─────────────────────────────────────────────────────── -->
+  <mat-card class="panel-card mt-16">
     <mat-card-header>
-      <mat-card-title>Top Products Today</mat-card-title>
+      <mat-card-title>
+        <mat-icon class="section-icon">history</mat-icon>
+        Recent Orders
+      </mat-card-title>
+      <a routerLink="/app/orders" class="card-link">View all →</a>
     </mat-card-header>
     <mat-card-content>
-      <table mat-table [dataSource]="dailyReport!.topProducts" class="full-width">
-        <ng-container matColumnDef="rank">
-          <th mat-header-cell *matHeaderCellDef>#</th>
-          <td mat-cell *matCellDef="let item; let i = index">{{ i + 1 }}</td>
-        </ng-container>
-        <ng-container matColumnDef="productName">
-          <th mat-header-cell *matHeaderCellDef>Product</th>
-          <td mat-cell *matCellDef="let item">{{ item.productName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="unitsSold">
-          <th mat-header-cell *matHeaderCellDef class="text-right">Units Sold</th>
-          <td mat-cell *matCellDef="let item" class="text-right">{{ item.unitsSold }}</td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="topProductsColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: topProductsColumns;"></tr>
-      </table>
+
+      <ng-container *ngIf="recentOrders.length > 0; else noOrders">
+        <table mat-table [dataSource]="recentOrders" class="full-width orders-table">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let o" class="order-id">#{{ o.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef>Customer</th>
+            <td mat-cell *matCellDef="let o">
+              <span *ngIf="o.customerName; else guest">{{ o.customerName }}</span>
+              <ng-template #guest><span class="muted">Walk-in</span></ng-template>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef class="num-cell">Items</th>
+            <td mat-cell *matCellDef="let o" class="num-cell">{{ o.items.length }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef class="num-cell">Total</th>
+            <td mat-cell *matCellDef="let o" class="num-cell price-cell">${{ o.total | number:'1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="payment">
+            <th mat-header-cell *matHeaderCellDef>Payment</th>
+            <td mat-cell *matCellDef="let o">
+              <span class="payment-cell">
+                <mat-icon class="pay-icon">{{ paymentIcon(o.paymentMethod) }}</mat-icon>
+                {{ paymentLabel(o.paymentMethod) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let o">
+              <span class="status-chip" [ngClass]="'chip-' + statusColor(o.status)">
+                {{ o.status | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef>Time</th>
+            <td mat-cell *matCellDef="let o" class="muted">{{ o.createdAt | date:'MMM d, h:mm a' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="recentOrdersColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: recentOrdersColumns;"></tr>
+        </table>
+      </ng-container>
+
+      <ng-template #noOrders>
+        <div class="mini-empty">
+          <mat-icon>receipt_long</mat-icon>
+          <p>No orders yet. <a routerLink="/app/pos">Start selling from the POS</a>.</p>
+        </div>
+      </ng-template>
+
     </mat-card-content>
   </mat-card>
 
-  <mat-card class="card mt-16 empty-state" *ngIf="!dailyReport?.topProducts?.length">
-    <mat-card-content>
-      <mat-icon>bar_chart</mat-icon>
-      <p>No sales data for today yet. Start making sales from the <a routerLink="/app/pos">POS screen</a>.</p>
-    </mat-card-content>
-  </mat-card>
-</div>
+</ng-container>
