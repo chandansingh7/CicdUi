@@ -28,7 +28,7 @@
         <div class="receipt-row" *ngIf="completedOrder.discount > 0"><span>Discount</span><span>-${{ completedOrder.discount | number:'1.2-2' }}</span></div>
         <div class="receipt-row total-row"><span>TOTAL</span><span>${{ completedOrder.total | number:'1.2-2' }}</span></div>
         <div class="receipt-row"><span>Payment</span><span>{{ completedOrder.paymentMethod }}</span></div>
-        <div class="receipt-footer-text" *ngIf="company?.receiptFooterText">{{ company.receiptFooterText }}</div>
+        <div class="receipt-footer-text" *ngIf="company?.receiptFooterText">{{ company?.receiptFooterText }}</div>
       </div>
       <div class="receipt-actions">
         <button mat-stroked-button (click)="printReceipt()" class="print-btn">

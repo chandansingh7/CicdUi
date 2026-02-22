@@ -131,7 +131,7 @@ export class CustomersComponent implements OnInit {
       if (!result) return;
       const call = customer ? this.customerService.update(customer.id, result) : this.customerService.create(result);
       call.subscribe({
-        next: () => { this.snackBar.open('Customer saved!', 'Close', { duration: 3000 }); this.load(); },
+        next: () => { this.snackBar.open('Customer saved!', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });
@@ -147,7 +147,7 @@ export class CustomersComponent implements OnInit {
     }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.customerService.delete(customer.id).subscribe({
-        next: () => { this.snackBar.open('Deleted', 'Close', { duration: 3000 }); this.load(); },
+        next: () => { this.snackBar.open('Deleted', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });

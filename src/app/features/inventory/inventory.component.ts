@@ -142,7 +142,7 @@ export class InventoryComponent implements OnInit {
       .afterClosed().subscribe(result => {
         if (!result) return;
         this.inventoryService.update(item.productId, result).subscribe({
-          next: () => { this.snackBar.open('Stock updated!', 'Close', { duration: 3000 }); this.load(); },
+          next: () => { this.snackBar.open('Stock updated!', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
           error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
         });
       });

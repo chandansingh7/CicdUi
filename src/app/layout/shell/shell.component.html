@@ -1,7 +1,7 @@
 <mat-sidenav-container class="shell-container">
   <mat-sidenav #sidenav [opened]="sidenavOpened" mode="side" class="sidenav">
     <div class="sidenav-header">
-      <img *ngIf="company?.logoUrl" [src]="company.logoUrl" alt="" class="brand-logo">
+      <img *ngIf="company?.logoUrl" [src]="company?.logoUrl" alt="" class="brand-logo">
       <mat-icon *ngIf="!company?.logoUrl" class="brand-icon">point_of_sale</mat-icon>
       <div class="brand-text">
         <span class="brand-name">{{ company?.name || 'POS System' }}</span>

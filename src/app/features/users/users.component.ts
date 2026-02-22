@@ -80,7 +80,7 @@ export class UsersComponent implements OnInit {
       width: '680px',
       disableClose: true
     }).afterClosed().subscribe(updated => {
-      if (updated) this.loadUsers();
+      if (updated) { this.loadUsers(); this.loadStats(); }
     });
   }
 
@@ -95,7 +95,7 @@ export class UsersComponent implements OnInit {
     }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.userService.toggleActive(user.id).subscribe({
-        next: () => { this.snackBar.open(`User ${action.toLowerCase()}d`, 'Close', { duration: 3000 }); this.loadUsers(); },
+        next: () => { this.snackBar.open(`User ${action.toLowerCase()}d`, 'Close', { duration: 3000 }); this.loadUsers(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });
@@ -115,6 +115,7 @@ export class UsersComponent implements OnInit {
         this.createForm.markAsUntouched();
         this.snackBar.open(this.successMessage, 'Close', { duration: 5000 });
         this.loadUsers();
+        this.loadStats();
       },
       error: err => {
         this.creating = false;

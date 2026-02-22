@@ -147,7 +147,7 @@ export class OrdersComponent implements OnInit {
     }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.orderService.cancel(order.id).subscribe({
-        next: () => { this.snackBar.open('Order cancelled', 'Close', { duration: 3000 }); this.load(); },
+        next: () => { this.snackBar.open('Order cancelled', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });

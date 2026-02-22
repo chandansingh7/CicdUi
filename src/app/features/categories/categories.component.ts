@@ -115,7 +115,7 @@ export class CategoriesComponent implements OnInit {
         ? this.categoryService.update(category.id, result)
         : this.categoryService.create(result);
       call.subscribe({
-        next: () => { this.snackBar.open('Category saved!', 'Close', { duration: 3000 }); this.load(); },
+        next: () => { this.snackBar.open('Category saved!', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });
@@ -127,7 +127,7 @@ export class CategoriesComponent implements OnInit {
     }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.categoryService.delete(category.id).subscribe({
-        next: () => { this.snackBar.open('Deleted', 'Close', { duration: 3000 }); this.load(); },
+        next: () => { this.snackBar.open('Deleted', 'Close', { duration: 3000 }); this.load(); this.loadStats(); },
         error: err => this.snackBar.open(err.error?.message || 'Error', 'Close', { duration: 4000 })
       });
     });

@@ -32,6 +32,7 @@ export interface BulkUploadPreviewData {
 })
 export class BulkUploadPreviewModalComponent {
   displayedColumns = ['rowIndex', 'name', 'sku', 'price', 'category', 'initialStock', 'lowStockThreshold', 'errors', 'actions'];
+  dataSource = new MatTableDataSource<BulkPreviewRow>([]);
   uploading = false;
 
   get isValid(): boolean {
@@ -52,7 +53,13 @@ export class BulkUploadPreviewModalComponent {
     private productService: ProductService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.dataSource.data = this.data.rows;
+  }
+
+  refreshTable(): void {
+    this.dataSource.data = [...this.data.rows];
+  }
 
   cancel(): void {
     this.dialogRef.close(false);
