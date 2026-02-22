@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -38,7 +38,8 @@ export class InventoryComponent implements OnInit {
     private inventoryService: InventoryService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -49,7 +50,12 @@ export class InventoryComponent implements OnInit {
   }
 
   loadStats(): void {
-    this.inventoryService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
+    this.inventoryService.getStats().subscribe({
+      next: res => {
+        this.stats = res.data ?? null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   sortBy(col: string): void {
