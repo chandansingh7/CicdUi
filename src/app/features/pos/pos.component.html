@@ -114,34 +114,35 @@
     <div class="cart-footer" *ngIf="cart.length">
       <mat-divider></mat-divider>
 
-      <mat-form-field appearance="outline" class="full-width compact-field compact-field-first" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Customer (optional)</mat-label>
-        <mat-select [(value)]="selectedCustomer">
-          <mat-option [value]="null">Walk-in Customer</mat-option>
-          <mat-option *ngFor="let c of customers" [value]="c">{{ c.name }}</mat-option>
-        </mat-select>
-        <mat-icon matPrefix>person</mat-icon>
-      </mat-form-field>
+      <!-- HCI: single row for efficiency, minimal vertical space -->
+      <div class="checkout-fields-row">
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic" floatLabel="always">
+          <mat-label>Customer</mat-label>
+          <mat-select [(value)]="selectedCustomer">
+            <mat-option [value]="null">Walk-in</mat-option>
+            <mat-option *ngFor="let c of customers" [value]="c">{{ c.name }}</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic" floatLabel="always">
+          <mat-label>Payment</mat-label>
+          <mat-select [(value)]="paymentMethod">
+            <mat-option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.label }}</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>payment</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="compact-field discount-field" subscriptSizing="dynamic" floatLabel="always">
+          <mat-label>Discount</mat-label>
+          <input matInput type="number" [(ngModel)]="discount" min="0">
+          <mat-icon matPrefix>discount</mat-icon>
+        </mat-form-field>
+      </div>
 
-      <mat-form-field appearance="outline" class="full-width compact-field" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Payment Method</mat-label>
-        <mat-select [(value)]="paymentMethod">
-          <mat-option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.label }}</mat-option>
-        </mat-select>
-        <mat-icon matPrefix>payment</mat-icon>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width compact-field" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Discount ($)</mat-label>
-        <input matInput type="number" [(ngModel)]="discount" min="0">
-        <mat-icon matPrefix>discount</mat-icon>
-      </mat-form-field>
-
-      <div class="totals">
+      <!-- HCI: clear hierarchy — totals grouped, TOTAL emphasized -->
+      <div class="totals-block">
         <div class="total-row-sm"><span>Subtotal</span><span>${{ subtotal | number:'1.2-2' }}</span></div>
         <div class="total-row-sm"><span>Tax (10%)</span><span>${{ tax | number:'1.2-2' }}</span></div>
         <div class="total-row-sm" *ngIf="discount > 0"><span>Discount</span><span>-${{ discount | number:'1.2-2' }}</span></div>
-        <mat-divider></mat-divider>
         <div class="total-row-lg"><span>TOTAL</span><span>${{ total | number:'1.2-2' }}</span></div>
       </div>
 

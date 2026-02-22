@@ -1,7 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ProductService } from '../../core/services/product.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BulkEditRowDialogComponent } from './bulk-edit-row-dialog.component';
+import { validatePreviewRow, buildCsvFileFromRows } from './bulk-upload-parser.util';
 
 export interface BulkPreviewRow {
   rowIndex: number;
@@ -27,7 +30,7 @@ export interface BulkUploadPreviewData {
   styleUrls: ['./bulk-upload-preview-modal.component.scss']
 })
 export class BulkUploadPreviewModalComponent {
-  displayedColumns = ['rowIndex', 'name', 'sku', 'price', 'category', 'initialStock', 'lowStockThreshold', 'errors'];
+  displayedColumns = ['rowIndex', 'name', 'sku', 'price', 'category', 'initialStock', 'lowStockThreshold', 'errors', 'actions'];
   uploading = false;
 
   get isValid(): boolean {
@@ -46,17 +49,45 @@ export class BulkUploadPreviewModalComponent {
     private dialogRef: MatDialogRef<BulkUploadPreviewModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BulkUploadPreviewData,
     private productService: ProductService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   cancel(): void {
     this.dialogRef.close(false);
   }
 
+  deleteRow(row: BulkPreviewRow): void {
+    const idx = this.data.rows.indexOf(row);
+    if (idx === -1) return;
+    this.data.rows.splice(idx, 1);
+    this.renumberRows();
+  }
+
+  editRow(row: BulkPreviewRow): void {
+    this.dialog.open(BulkEditRowDialogComponent, {
+      width: '420px',
+      data: { row: { ...row } },
+      disableClose: false
+    }).afterClosed().subscribe((updated: BulkPreviewRow | null) => {
+      if (!updated) return;
+      const idx = this.data.rows.findIndex(r => r === row);
+      if (idx === -1) return;
+      updated.errors = validatePreviewRow(updated);
+      updated.rowIndex = row.rowIndex;
+      this.data.rows[idx] = updated;
+    });
+  }
+
+  private renumberRows(): void {
+    this.data.rows.forEach((r, i) => { r.rowIndex = i + 1; });
+  }
+
   upload(): void {
     if (!this.isValid) return;
     this.uploading = true;
-    this.productService.bulkUpload(this.data.file).subscribe({
+    const file = buildCsvFileFromRows(this.data.rows, this.data.fileName || 'bulk-upload.csv');
+    this.productService.bulkUpload(file).subscribe({
       next: res => {
         this.uploading = false;
         const d = res.data;

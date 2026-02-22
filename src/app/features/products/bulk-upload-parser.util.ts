@@ -150,3 +150,47 @@ export async function parseBulkFile(file: File): Promise<BulkPreviewRow[]> {
   if (name.endsWith('.csv')) return parseCsvFile(file);
   return parseExcelFile(file);
 }
+
+/** Re-validate a single row (e.g. after edit). */
+export function validatePreviewRow(row: BulkPreviewRow): string[] {
+  const cells = [
+    row.name,
+    row.sku,
+    row.barcode,
+    row.price,
+    row.category,
+    row.initialStock,
+    row.lowStockThreshold
+  ];
+  return validateRow(cells, row.rowIndex);
+}
+
+/** Build a CSV file from current rows for upload (handles commas in values). */
+function escapeCsvValue(val: string): string {
+  const s = String(val ?? '').trim();
+  if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+export function buildCsvFileFromRows(rows: BulkPreviewRow[], fileName = 'bulk-upload.csv'): File {
+  const header = 'Name,SKU,Barcode,Price,Category,Initial Stock,Low Stock Threshold';
+  const lines = [
+    header,
+    ...rows.map(r =>
+      [
+        escapeCsvValue(r.name),
+        escapeCsvValue(r.sku),
+        escapeCsvValue(r.barcode),
+        escapeCsvValue(r.price),
+        escapeCsvValue(r.category),
+        escapeCsvValue(r.initialStock),
+        escapeCsvValue(r.lowStockThreshold)
+      ].join(',')
+    )
+  ];
+  const csv = lines.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  return new File([blob], fileName, { type: 'text/csv' });
+}

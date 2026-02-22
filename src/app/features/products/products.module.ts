@@ -4,11 +4,12 @@ import { SharedModule } from '../../shared/shared.module';
 import { ProductsComponent } from './products.component';
 import { ProductDialogComponent } from './product-dialog.component';
 import { BulkUploadPreviewModalComponent } from './bulk-upload-preview-modal.component';
+import { BulkEditRowDialogComponent } from './bulk-edit-row-dialog.component';
 
 const routes: Routes = [{ path: '', component: ProductsComponent }];
 
 @NgModule({
-  declarations: [ProductsComponent, ProductDialogComponent, BulkUploadPreviewModalComponent],
+  declarations: [ProductsComponent, ProductDialogComponent, BulkUploadPreviewModalComponent, BulkEditRowDialogComponent],
   imports: [SharedModule, RouterModule.forChild(routes)]
 })
 export class ProductsModule {}
