@@ -4,9 +4,21 @@
     <button mat-stroked-button *ngIf="hasActiveFilters" (click)="clearFilters()" class="clear-btn">
       <mat-icon>filter_alt_off</mat-icon> Clear Filters
     </button>
-    <button mat-raised-button color="primary" *ngIf="isAdminOrManager" (click)="openDialog()">
-      <mat-icon>add</mat-icon> Add Product
-    </button>
+    <ng-container *ngIf="isAdminOrManager">
+      <button mat-stroked-button (click)="downloadTemplate()" [disabled]="bulkUploading" matTooltip="Excel template">
+        <mat-icon>download</mat-icon> Excel
+      </button>
+      <button mat-stroked-button (click)="downloadTemplateCsv()" [disabled]="bulkUploading" matTooltip="CSV template">
+        <mat-icon>download</mat-icon> CSV
+      </button>
+      <button mat-stroked-button (click)="bulkUploadInput.click()" [disabled]="bulkUploading">
+        <mat-icon>upload_file</mat-icon> {{ bulkUploading ? 'Uploading...' : 'Bulk upload' }}
+      </button>
+      <input #bulkUploadInput type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none" (change)="onBulkFileSelected($event)">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Add Product
+      </button>
+    </ng-container>
   </div>
 </div>
 

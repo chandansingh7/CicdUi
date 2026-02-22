@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ProductService, ProductStats } from '../../core/services/product.service';
+import { ProductService, ProductStats, BulkUploadResult } from '../../core/services/product.service';
 import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ProductResponse } from '../../core/models/product.models';
@@ -29,6 +29,7 @@ export class ProductsComponent implements OnInit {
   totalElements = 0;
   pageSize = 10;
   loading = false;
+  bulkUploading = false;
 
   searchControl  = new FormControl('');
   categoryFilter = new FormControl(null);
@@ -70,6 +71,64 @@ export class ProductsComponent implements OnInit {
 
   loadStats(): void {
     this.productService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
+  }
+
+  downloadTemplate(): void {
+    this.productService.downloadBulkTemplate().subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products-bulk-template.xlsx';
+        a.click();
+        URL.revokeObjectURL(url);
+        this.snackBar.open('Template downloaded', 'Close', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Download failed', 'Close', { duration: 3000 })
+    });
+  }
+
+  downloadTemplateCsv(): void {
+    this.productService.downloadBulkTemplateCsv().subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products-bulk-template.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        this.snackBar.open('CSV template downloaded', 'Close', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Download failed', 'Close', { duration: 3000 })
+    });
+  }
+
+  onBulkFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.bulkUploading = true;
+    this.productService.bulkUpload(file).subscribe({
+      next: res => {
+        this.bulkUploading = false;
+        input.value = '';
+        const d = res.data;
+        if (!d) return;
+        const msg = `Bulk upload: ${d.successCount} created, ${d.failCount} failed.`;
+        this.snackBar.open(msg, 'Close', { duration: d.failCount ? 5000 : 3000 });
+        if (d.errors?.length) {
+          const details = d.errors.slice(0, 5).map(e => `Row ${e.row}: ${e.message}`).join('; ');
+          this.snackBar.open(details, 'Close', { duration: 8000 });
+        }
+        this.loadProducts(0);
+        this.loadStats();
+      },
+      error: () => {
+        this.bulkUploading = false;
+        input.value = '';
+        this.snackBar.open('Bulk upload failed', 'Close', { duration: 4000 });
+      }
+    });
   }
 
   sortBy(col: string): void {

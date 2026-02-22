@@ -22,6 +22,9 @@
     <button mat-raised-button color="primary" (click)="loadDaily()">
       <mat-icon>search</mat-icon> Load Report
     </button>
+    <button mat-stroked-button (click)="downloadDailyExcel()" [disabled]="loadingDaily">
+      <mat-icon>download</mat-icon> Download Excel
+    </button>
   </div>
 
   <div *ngIf="loadingDaily" class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
@@ -83,6 +86,9 @@
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="loadMonthly()">
       <mat-icon>search</mat-icon> Load Report
+    </button>
+    <button mat-stroked-button (click)="downloadMonthlyExcel()" [disabled]="loadingMonthly">
+      <mat-icon>download</mat-icon> Download Excel
     </button>
   </div>
 

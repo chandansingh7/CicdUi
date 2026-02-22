@@ -13,6 +13,13 @@ export interface ProductStats {
   outOfStock: number;
 }
 
+export interface BulkUploadResult {
+  totalRows: number;
+  successCount: number;
+  failCount: number;
+  errors: { row: number; field: string; message: string }[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private url = `${environment.apiUrl}/api/products`;
@@ -55,5 +62,19 @@ export class ProductService {
   getStats(): Observable<ApiResponse<ProductStats>> {
     return this.http.get<ApiResponse<ProductStats>>(`${this.url}/stats`,
       { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
+  }
+
+  bulkUpload(file: File): Observable<ApiResponse<BulkUploadResult>> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<ApiResponse<BulkUploadResult>>(`${this.url}/bulk-upload`, form);
+  }
+
+  downloadBulkTemplate(): Observable<Blob> {
+    return this.http.get(`${this.url}/bulk-upload-template`, { responseType: 'blob' });
+  }
+
+  downloadBulkTemplateCsv(): Observable<Blob> {
+    return this.http.get(`${this.url}/bulk-upload-template.csv`, { responseType: 'blob' });
   }
 }

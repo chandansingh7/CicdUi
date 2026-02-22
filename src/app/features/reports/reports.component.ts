@@ -57,4 +57,36 @@ export class ReportsComponent implements OnInit {
     this.activeTab = tab;
     if (tab === 'monthly' && !this.monthlyReport) this.loadMonthly();
   }
+
+  downloadDailyExcel(): void {
+    const date = this.dateControl.value;
+    const dateStr = date ? date.toISOString().split('T')[0] : undefined;
+    this.reportService.downloadDailyExcel(dateStr).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales-daily-${dateStr || new Date().toISOString().split('T')[0]}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {}
+    });
+  }
+
+  downloadMonthlyExcel(): void {
+    const year = this.yearControl.value ?? new Date().getFullYear();
+    const month = this.monthControl.value ?? new Date().getMonth() + 1;
+    this.reportService.downloadMonthlyExcel(year, month).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales-monthly-${year}-${String(month).padStart(2, '0')}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {}
+    });
+  }
 }
