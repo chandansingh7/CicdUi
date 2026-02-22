@@ -222,8 +222,9 @@ export class ProductsComponent implements OnInit {
         this.loading = false;
         this.applyColumnFilters();
         this.applySort();
+        this.cdr.detectChanges();
       },
-      error: () => { this.loading = false; }
+      error: () => { this.loading = false; this.cdr.detectChanges(); }
     });
   }
 
