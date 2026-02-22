@@ -72,7 +72,7 @@ export class UsersComponent implements OnInit {
   openEdit(user: UserResponse): void {
     this.dialog.open(EditUserDialogComponent, {
       data: { user, adminMode: true },
-      width: '460px',
+      width: '680px',
       disableClose: true
     }).afterClosed().subscribe(updated => {
       if (updated) this.loadUsers();

@@ -61,7 +61,7 @@ export class ShellComponent implements OnInit {
       next: res => {
         this.dialog.open(EditUserDialogComponent, {
           data: { user: res.data, adminMode: false },
-          width: '440px',
+          width: '680px',
           disableClose: true
         }).afterClosed().subscribe(updated => {
           if (updated) this.username = updated.email; // reflect change in sidebar
