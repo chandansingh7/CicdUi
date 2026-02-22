@@ -5,6 +5,7 @@ import { CompanyService } from '../../core/services/company.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CompanyResponse, RECEIPT_PAPER_SIZES } from '../../core/models/company.models';
+import { resolveProductImageUrl } from '../../core/utils/product-image.util';
 
 @Component({
   selector: 'app-settings',
@@ -44,6 +45,16 @@ export class SettingsComponent implements OnInit {
       return;
     }
     this.load();
+  }
+
+  /** Resolved logo URL so images load from API when app is on a different origin. */
+  get logoImageUrl(): string | null {
+    return resolveProductImageUrl(this.company?.logoUrl);
+  }
+
+  /** Resolved favicon URL so images load from API when app is on a different origin. */
+  get faviconImageUrl(): string | null {
+    return resolveProductImageUrl(this.company?.faviconUrl);
   }
 
   load(): void {

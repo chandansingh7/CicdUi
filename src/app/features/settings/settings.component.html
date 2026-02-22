@@ -24,8 +24,8 @@
       <div class="upload-row">
         <div class="upload-block">
           <label class="upload-label">Logo</label>
-          <div class="upload-preview" *ngIf="company?.logoUrl">
-            <img [src]="company?.logoUrl" alt="Logo" class="preview-img logo-preview">
+          <div class="upload-preview" *ngIf="logoImageUrl">
+            <img [src]="logoImageUrl" alt="Logo" class="preview-img logo-preview">
           </div>
           <div class="upload-actions">
             <input #logoInput type="file" accept="image/*" hidden (change)="onLogoSelected($event)">
@@ -36,8 +36,8 @@
         </div>
         <div class="upload-block">
           <label class="upload-label">Favicon</label>
-          <div class="upload-preview" *ngIf="company?.faviconUrl">
-            <img [src]="company?.faviconUrl" alt="Favicon" class="preview-img favicon-preview">
+          <div class="upload-preview" *ngIf="faviconImageUrl">
+            <img [src]="faviconImageUrl" alt="Favicon" class="preview-img favicon-preview">
           </div>
           <div class="upload-actions">
             <input #faviconInput type="file" accept="image/*" hidden (change)="onFaviconSelected($event)">

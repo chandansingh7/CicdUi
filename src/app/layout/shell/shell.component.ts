@@ -7,6 +7,7 @@ import { ChangePasswordDialogComponent } from '../../shared/components/change-pa
 import { EditUserDialogComponent } from '../../shared/components/edit-user-dialog/edit-user-dialog.component';
 import { UserService } from '../../core/services/user.service';
 import { CompanyResponse } from '../../core/models/company.models';
+import { resolveProductImageUrl } from '../../core/utils/product-image.util';
 
 interface NavItem {
   label: string;
@@ -53,6 +54,10 @@ export class ShellComponent implements OnInit {
     this.username = this.authService.getUsername() || '';
     this.role = this.authService.getRole() || '';
     this.companyService.get().subscribe({ next: res => { this.company = res.data ?? null; } });
+  }
+
+  get logoImageUrl(): string | null {
+    return resolveProductImageUrl(this.company?.logoUrl);
   }
 
   get visibleNavItems(): NavItem[] {
