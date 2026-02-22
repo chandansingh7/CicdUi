@@ -1,0 +1,71 @@
+<div class="page-header">
+  <h2>Billing / Receipt preview</h2>
+  <p class="page-desc">Preview exactly how the bill will look in the customer's hand. Set company in Settings, then choose bill type below.</p>
+</div>
+
+<div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+<div *ngIf="!loading && !company" class="no-company">
+  <mat-card class="card">
+    <mat-card-content>
+      <mat-icon class="icon-warn">business</mat-icon>
+      <h3>No company set</h3>
+      <p>Add your company details in Settings so they appear on every bill.</p>
+      <button mat-raised-button color="primary" (click)="goToSettings()">
+        <mat-icon>settings</mat-icon> Go to Settings
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="!loading && company" class="billing-layout">
+  <mat-card class="controls-card">
+    <mat-card-header>
+      <mat-card-title>Company & bill type</mat-card-title>
+      <mat-card-subtitle>Company is set in Settings. Choose how the receipt will look.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="company-summary">
+        <strong>{{ company.name }}</strong>
+        <span *ngIf="company.phone" class="detail">{{ company.phone }}</span>
+        <span *ngIf="company.address" class="detail">{{ company.address }}</span>
+        <button mat-stroked-button (click)="goToSettings()" class="edit-company">
+          <mat-icon>edit</mat-icon> Edit company
+        </button>
+      </div>
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <mat-label>Bill type (paper size)</mat-label>
+        <mat-select [(value)]="billType">
+          <mat-option *ngFor="let opt of receiptSizes" [value]="opt.value">{{ opt.label }}</mat-option>
+        </mat-select>
+        <mat-hint>Exact preview updates below</mat-hint>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="preview-section">
+    <h3 class="preview-label">Preview — as customer will see</h3>
+    <div class="receipt-paper" [class]="previewWidthClass">
+      <div class="receipt-inner">
+        <div class="r-company-name">{{ company.name }}</div>
+        <div *ngIf="company.address" class="r-detail">{{ company.address }}</div>
+        <div *ngIf="company.phone" class="r-detail">{{ company.phone }}</div>
+        <div *ngIf="company.email" class="r-detail">{{ company.email }}</div>
+        <div *ngIf="company.receiptHeaderText" class="r-header">{{ company.receiptHeaderText }}</div>
+        <div class="r-divider"></div>
+        <div class="r-order-id">Order #{{ sampleOrder.orderId }}</div>
+        <div class="r-row" *ngFor="let item of sampleOrder.items">
+          <span class="r-item-desc">{{ item.productName }} x{{ item.quantity }}</span>
+          <span class="r-item-amt">${{ item.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="r-divider"></div>
+        <div class="r-row"><span>Subtotal</span><span>${{ sampleOrder.subtotal | number:'1.2-2' }}</span></div>
+        <div class="r-row"><span>Tax</span><span>${{ sampleOrder.tax | number:'1.2-2' }}</span></div>
+        <div class="r-row" *ngIf="sampleOrder.discount > 0"><span>Discount</span><span>-${{ sampleOrder.discount | number:'1.2-2' }}</span></div>
+        <div class="r-row r-total"><span>TOTAL</span><span>${{ sampleOrder.total | number:'1.2-2' }}</span></div>
+        <div class="r-row"><span>Payment</span><span>{{ sampleOrder.paymentMethod }}</span></div>
+        <div *ngIf="company.receiptFooterText" class="r-footer">{{ company.receiptFooterText }}</div>
+      </div>
+    </div>
+  </div>
+</div>

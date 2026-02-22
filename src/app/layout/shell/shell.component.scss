@@ -17,7 +17,8 @@
   padding: t.$space-lg t.$space-md;
 }
 
-.brand-icon { font-size: 36px; width: 36px; height: 36px; color: t.$sidenav-text-active; }
+.brand-icon { font-size: 36px; width: 36px; height: 36px; color: t.$sidenav-text-active; flex-shrink: 0; }
+.brand-logo { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
 
 .brand-text  { display: flex; flex-direction: column; }
 .brand-name  { font-size: t.$font-size-lg; font-weight: t.$font-weight-bold; color: t.$color-white; }

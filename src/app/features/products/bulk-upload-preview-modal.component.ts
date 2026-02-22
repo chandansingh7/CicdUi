@@ -1,6 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 import { ProductService } from '../../core/services/product.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BulkEditRowDialogComponent } from './bulk-edit-row-dialog.component';
@@ -62,6 +63,7 @@ export class BulkUploadPreviewModalComponent {
     if (idx === -1) return;
     this.data.rows.splice(idx, 1);
     this.renumberRows();
+    this.refreshTable();
   }
 
   editRow(row: BulkPreviewRow): void {
@@ -76,6 +78,7 @@ export class BulkUploadPreviewModalComponent {
       updated.errors = validatePreviewRow(updated);
       updated.rowIndex = row.rowIndex;
       this.data.rows[idx] = updated;
+      this.refreshTable();
     });
   }
 

@@ -7,6 +7,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { OrderService, OrderStats } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
+import { CompanyService } from '../../core/services/company.service';
 import { OrderResponse } from '../../core/models/order.models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -42,6 +43,7 @@ export class OrdersComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private authService: AuthService,
+    private companyService: CompanyService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -160,7 +162,45 @@ export class OrdersComponent implements OnInit {
   }
 
   printReceipt(order: OrderResponse): void {
-    this.snackBar.open(`Printing receipt for Order #${order.id} — coming soon`, 'Close', { duration: 3000 });
+    const c = this.companyService.getCached();
+    const widthClass = (c?.receiptPaperSize === '58mm') ? 'receipt-58' : (c?.receiptPaperSize === 'A4') ? 'receipt-a4' : 'receipt-80';
+    const w = window.open('', '_blank', 'width=400,height=600');
+    if (!w) {
+      this.snackBar.open('Allow popups to print receipt', 'Close', { duration: 3000 });
+      return;
+    }
+    w.document.write(`
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt #${order.id}</title>
+<style>
+  body { font-family: monospace; margin: 0; padding: 12px; }
+  .receipt-58 { max-width: 58mm; }
+  .receipt-80 { max-width: 80mm; }
+  .receipt-a4 { max-width: 210mm; }
+  .company-name { font-weight: bold; font-size: 1.1em; text-align: center; margin-bottom: 8px; }
+  .company-detail { font-size: 0.85em; text-align: center; color: #444; margin: 2px 0; }
+  .row { display: flex; justify-content: space-between; margin: 4px 0; }
+  .total { font-weight: bold; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #000; }
+  .footer { text-align: center; margin-top: 12px; font-size: 0.9em; }
+</style></head><body class="${widthClass}">
+  <div class="company-name">${c?.name || 'Receipt'}</div>
+  ${c?.address ? `<div class="company-detail">${c.address}</div>` : ''}
+  ${c?.phone ? `<div class="company-detail">${c.phone}</div>` : ''}
+  ${c?.receiptHeaderText ? `<div class="company-detail">${c.receiptHeaderText}</div>` : ''}
+  <div style="margin: 8px 0; border-bottom: 1px dashed #000;"></div>
+  <div>Order #${order.id}</div>
+  ${(order.items || []).map((i: { productName: string; quantity: number; subtotal: number }) =>
+    `<div class="row"><span>${i.productName} x${i.quantity}</span><span>$${Number(i.subtotal).toFixed(2)}</span></div>`
+  ).join('')}
+  <div class="row"><span>Subtotal</span><span>$${Number(order.subtotal).toFixed(2)}</span></div>
+  <div class="row"><span>Tax</span><span>$${Number(order.tax).toFixed(2)}</span></div>
+  ${(order.discount || 0) > 0 ? `<div class="row"><span>Discount</span><span>-$${Number(order.discount).toFixed(2)}</span></div>` : ''}
+  <div class="row total"><span>TOTAL</span><span>$${Number(order.total).toFixed(2)}</span></div>
+  <div class="row"><span>Payment</span><span>${order.paymentMethod || ''}</span></div>
+  ${c?.receiptFooterText ? `<div class="footer">${c.receiptFooterText}</div>` : ''}
+</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 250);
   }
 
   clearFilters(): void { this.filters.reset(); }

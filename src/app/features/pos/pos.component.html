@@ -12,6 +12,12 @@
       </div>
       <mat-divider></mat-divider>
       <div class="receipt-body">
+        <div class="receipt-company" *ngIf="company">
+          <div class="receipt-company-name">{{ company.name }}</div>
+          <div *ngIf="company.address" class="receipt-company-detail">{{ company.address }}</div>
+          <div *ngIf="company.phone" class="receipt-company-detail">{{ company.phone }}</div>
+          <div *ngIf="company.email" class="receipt-company-detail">{{ company.email }}</div>
+        </div>
         <div class="receipt-row" *ngFor="let item of completedOrder.items">
           <span>{{ item.productName }} x{{ item.quantity }}</span>
           <span>${{ item.subtotal | number:'1.2-2' }}</span>
@@ -22,10 +28,16 @@
         <div class="receipt-row" *ngIf="completedOrder.discount > 0"><span>Discount</span><span>-${{ completedOrder.discount | number:'1.2-2' }}</span></div>
         <div class="receipt-row total-row"><span>TOTAL</span><span>${{ completedOrder.total | number:'1.2-2' }}</span></div>
         <div class="receipt-row"><span>Payment</span><span>{{ completedOrder.paymentMethod }}</span></div>
+        <div class="receipt-footer-text" *ngIf="company?.receiptFooterText">{{ company.receiptFooterText }}</div>
       </div>
-      <button mat-raised-button color="primary" class="full-width" style="margin-top:16px" (click)="newOrder()">
-        <mat-icon>add_shopping_cart</mat-icon> New Order
-      </button>
+      <div class="receipt-actions">
+        <button mat-stroked-button (click)="printReceipt()" class="print-btn">
+          <mat-icon>print</mat-icon> Print receipt
+        </button>
+        <button mat-raised-button color="primary" class="full-width" (click)="newOrder()">
+          <mat-icon>add_shopping_cart</mat-icon> New Order
+        </button>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>
@@ -132,8 +144,8 @@
           <mat-icon matPrefix>payment</mat-icon>
         </mat-form-field>
         <mat-form-field appearance="outline" class="compact-field discount-field" subscriptSizing="dynamic" floatLabel="always">
-          <mat-label>Discount</mat-label>
-          <input matInput type="number" [(ngModel)]="discount" min="0">
+          <mat-label>Discount ($)</mat-label>
+          <input matInput type="number" [(ngModel)]="discount" min="0" step="0.01" placeholder="0">
           <mat-icon matPrefix>discount</mat-icon>
         </mat-form-field>
       </div>

@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
+import { CompanyService } from '../../core/services/company.service';
 import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 import { EditUserDialogComponent } from '../../shared/components/edit-user-dialog/edit-user-dialog.component';
 import { UserService } from '../../core/services/user.service';
+import { CompanyResponse } from '../../core/models/company.models';
 
 interface NavItem {
   label: string;
@@ -23,6 +25,7 @@ export class ShellComponent implements OnInit {
   username = '';
   role = '';
   sidenavOpened = true;
+  company: CompanyResponse | null = null;
 
   navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
@@ -33,11 +36,14 @@ export class ShellComponent implements OnInit {
     { label: 'Customers', icon: 'people', route: '/app/customers' },
     { label: 'Inventory', icon: 'warehouse', route: '/app/inventory', managerPlus: true },
     { label: 'Reports', icon: 'bar_chart', route: '/app/reports', managerPlus: true },
+    { label: 'Billing', icon: 'receipt', route: '/app/billing', managerPlus: true },
+    { label: 'Settings', icon: 'business', route: '/app/settings', adminOnly: true },
     { label: 'Users', icon: 'manage_accounts', route: '/app/users', adminOnly: true },
   ];
 
   constructor(
     private authService: AuthService,
+    private companyService: CompanyService,
     private router: Router,
     private dialog: MatDialog,
     private userService: UserService
@@ -46,6 +52,7 @@ export class ShellComponent implements OnInit {
   ngOnInit(): void {
     this.username = this.authService.getUsername() || '';
     this.role = this.authService.getRole() || '';
+    this.companyService.get().subscribe({ next: res => { this.company = res.data ?? null; } });
   }
 
   get visibleNavItems(): NavItem[] {

@@ -1,0 +1,119 @@
+@use 'theme' as t;
+
+.page-desc {
+  margin: 4px 0 0;
+  font-size: t.$font-size-sm;
+  color: t.$color-text-secondary;
+  max-width: 560px;
+}
+
+.loading-center { display: flex; justify-content: center; padding: 48px; }
+
+.no-company {
+  max-width: 420px;
+  .card { text-align: center; padding: t.$space-xl; }
+  .icon-warn { font-size: 56px; width: 56px; height: 56px; color: t.$color-warn; margin-bottom: t.$space-sm; }
+  h3 { margin: 0 0 t.$space-xs; }
+  p { color: t.$color-text-secondary; margin-bottom: t.$space-lg; }
+}
+
+.billing-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: t.$space-xl;
+  align-items: start;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.controls-card {
+  .company-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: t.$space-lg;
+    .detail { font-size: t.$font-size-sm; color: t.$color-text-secondary; }
+    .edit-company { align-self: flex-start; margin-top: 8px; }
+  }
+  .full-width { width: 100%; }
+}
+
+.preview-section {
+  position: sticky;
+  top: t.$space-lg;
+}
+
+.preview-label {
+  font-size: t.$font-size-sm;
+  color: t.$color-text-secondary;
+  margin: 0 0 t.$space-md;
+  font-weight: t.$font-weight-medium;
+}
+
+// Receipt paper – exact look customer gets (thermal/A4)
+.receipt-paper {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 16px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #000;
+  margin: 0 auto;
+}
+
+.receipt-inner {
+  margin: 0 auto;
+}
+
+// Widths match printed receipt (same as print window)
+.preview-58 .receipt-inner { max-width: 58mm; }
+.preview-80 .receipt-inner { max-width: 80mm; }
+.preview-a4 .receipt-inner { max-width: 210mm; }
+
+.r-company-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.r-detail, .r-header {
+  font-size: 0.85em;
+  text-align: center;
+  color: #444;
+  margin: 2px 0;
+}
+
+.r-divider {
+  border-bottom: 1px dashed #000;
+  margin: 8px 0;
+}
+
+.r-order-id { margin-bottom: 4px; }
+
+.r-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 3px 0;
+  gap: 8px;
+  .r-item-desc { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .r-item-amt { flex-shrink: 0; }
+}
+
+.r-total {
+  font-weight: bold;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #000;
+}
+
+.r-footer {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.9em;
+  color: #333;
+}

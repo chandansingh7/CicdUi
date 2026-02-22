@@ -1,0 +1,9 @@
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 520px;
+}
+.full-width { width: 100%; }
+.card { margin-bottom: 24px; }
+.loading-center { display: flex; justify-content: center; padding: 48px; }
