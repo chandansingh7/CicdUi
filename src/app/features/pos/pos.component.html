@@ -84,21 +84,21 @@
           <span class="item-unit-price">${{ item.product.price | number:'1.2-2' }} each</span>
         </div>
 
-        <div class="item-stepper">
-          <button class="step-btn" (click)="updateQty(item, item.quantity - 1)">
-            <mat-icon>remove</mat-icon>
-          </button>
-          <span class="step-qty">{{ item.quantity }}</span>
-          <button class="step-btn" (click)="updateQty(item, item.quantity + 1)">
-            <mat-icon>add</mat-icon>
+        <div class="item-right-group">
+          <div class="item-stepper">
+            <button class="step-btn" (click)="updateQty(item, item.quantity - 1)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="step-qty">{{ item.quantity }}</span>
+            <button class="step-btn" (click)="updateQty(item, item.quantity + 1)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <span class="item-subtotal">${{ item.subtotal | number:'1.2-2' }}</span>
+          <button class="item-remove" (click)="removeFromCart(item)" matTooltip="Remove">
+            <mat-icon>close</mat-icon>
           </button>
         </div>
-
-        <span class="item-subtotal">${{ item.subtotal | number:'1.2-2' }}</span>
-
-        <button class="item-remove" (click)="removeFromCart(item)" matTooltip="Remove">
-          <mat-icon>close</mat-icon>
-        </button>
 
       </div>
     </div>
