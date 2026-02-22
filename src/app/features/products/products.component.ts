@@ -161,7 +161,7 @@ export class ProductsComponent implements OnInit {
 
   openDialog(product?: ProductResponse): void {
     const ref = this.dialog.open(ProductDialogComponent, {
-      data: { product, categories: this.categories }, width: '580px'
+      data: { product, categories: this.categories }, width: '620px', disableClose: true
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;

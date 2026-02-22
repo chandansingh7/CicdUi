@@ -17,32 +17,40 @@ export interface ProductDialogData {
     <mat-dialog-content>
       <form [formGroup]="form" class="dialog-form">
 
-        <!-- Image section -->
+        <!-- Image section: compact side-by-side layout -->
         <div class="image-section">
-          <div class="image-preview" (click)="fileInput.click()" [class.has-image]="previewUrl">
-            <img *ngIf="previewUrl" [src]="previewUrl" alt="Product image" class="preview-img">
-            <div *ngIf="!previewUrl" class="no-image">
-              <mat-icon>add_photo_alternate</mat-icon>
-              <span>Click to upload image</span>
+          <div class="image-row">
+            <!-- Preview thumbnail -->
+            <div class="image-preview" (click)="fileInput.click()" [class.has-image]="previewUrl">
+              <img *ngIf="previewUrl" [src]="previewUrl" alt="Product image"
+                   class="preview-img" (error)="onImageError()">
+              <div *ngIf="!previewUrl" class="no-image">
+                <mat-icon>add_photo_alternate</mat-icon>
+                <span>Click to upload</span>
+              </div>
             </div>
-          </div>
-          <div class="image-actions">
-            <button mat-stroked-button type="button" (click)="fileInput.click()">
-              <mat-icon>upload</mat-icon> {{ selectedFile ? 'Change' : 'Upload' }} Image
-            </button>
-            <button mat-icon-button type="button" color="warn" *ngIf="previewUrl" (click)="clearImage()" matTooltip="Remove image">
-              <mat-icon>delete</mat-icon>
-            </button>
-            <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+
+            <!-- Upload controls -->
+            <div class="image-controls">
+              <div class="image-actions">
+                <button mat-stroked-button type="button" (click)="fileInput.click()">
+                  <mat-icon>upload</mat-icon> {{ selectedFile ? 'Change' : 'Upload' }}
+                </button>
+                <button mat-icon-button type="button" color="warn" *ngIf="previewUrl"
+                        (click)="clearImage()" matTooltip="Remove image">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+              <mat-form-field appearance="outline" class="full-width url-field">
+                <mat-label>Or paste image URL</mat-label>
+                <input matInput formControlName="imageUrl" placeholder="https://..." (input)="onUrlInput()">
+                <mat-icon matPrefix>link</mat-icon>
+              </mat-form-field>
+            </div>
           </div>
           <input #fileInput type="file" accept="image/jpeg,image/png,image/gif,image/webp"
             style="display:none" (change)="onFileSelected($event)">
-          <!-- URL fallback -->
-          <mat-form-field appearance="outline" class="full-width" style="margin-top:8px">
-            <mat-label>Or paste Image URL</mat-label>
-            <input matInput formControlName="imageUrl" placeholder="https://..." (input)="onUrlInput()">
-            <mat-icon matPrefix>link</mat-icon>
-          </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -94,24 +102,41 @@ export interface ProductDialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Save</button>
+      <button mat-stroked-button mat-dialog-close>Cancel</button>
+      <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon> Save
+      </button>
     </mat-dialog-actions>
   `,
   styles: [`
+    /* Dialog content padding */
+    :host ::ng-deep mat-dialog-content,
+    :host ::ng-deep .mat-mdc-dialog-content,
+    :host ::ng-deep .mdc-dialog__content {
+      max-height: unset !important;
+      overflow: hidden !important;
+      padding: 8px 20px 4px !important;
+    }
+    :host ::ng-deep mat-dialog-actions {
+      padding: 8px 20px 12px !important;
+    }
+
     .dialog-form {
-      display: flex; flex-direction: column; gap: 8px;
-      min-width: 480px; max-width: 540px; padding-top: 8px;
+      display: flex; flex-direction: column; gap: 6px;
+      padding-top: 4px;
     }
     .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .full-width { width: 100%; }
 
+    /* ── Image section: preview left, controls right ── */
     .image-section {
       border: 1px solid #e0e0e0; border-radius: 8px;
-      padding: 12px; background: #fafafa; margin-bottom: 4px;
+      padding: 10px; background: #fafafa;
     }
+    .image-row { display: flex; gap: 12px; align-items: flex-start; }
+
     .image-preview {
-      width: 100%; height: 140px; border-radius: 6px;
+      flex-shrink: 0; width: 90px; height: 90px; border-radius: 6px;
       border: 2px dashed #bdbdbd; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; background: #fff; transition: border-color 0.2s;
@@ -121,15 +146,17 @@ export interface ProductDialogData {
     .preview-img { width: 100%; height: 100%; object-fit: contain; }
     .no-image {
       display: flex; flex-direction: column; align-items: center;
-      gap: 6px; color: #9e9e9e; font-size: 13px;
-      mat-icon { font-size: 36px; width: 36px; height: 36px; }
+      gap: 4px; color: #9e9e9e; font-size: 11px; text-align: center;
     }
-    .image-actions {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 8px; flex-wrap: wrap;
+    .no-image mat-icon { font-size: 28px; width: 28px; height: 28px; }
+
+    .image-controls { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .image-actions { display: flex; align-items: center; gap: 6px; }
+    .file-name {
+      font-size: 11px; color: #616161;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .file-name { font-size: 12px; color: #616161; flex: 1; overflow: hidden;
-      text-overflow: ellipsis; white-space: nowrap; }
+    .url-field { margin-top: 2px; }
   `]
 })
 export class ProductDialogComponent implements OnInit, OnDestroy {
@@ -197,6 +224,11 @@ export class ProductDialogComponent implements OnInit, OnDestroy {
     this.revokeObjectUrl();
     this.previewUrl = null;
     this.form.get('imageUrl')?.setValue('');
+  }
+
+  /** Called when the <img> src fails to load (e.g. stale localhost URL in DB) */
+  onImageError(): void {
+    this.previewUrl = null;
   }
 
   save(): void {
