@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api.models';
 import { Role } from '../models/auth.models';
+import { SILENT_ERROR_HEADER } from '../interceptors/error.interceptor';
 
 export interface UserResponse {
   id: number;
@@ -75,6 +76,7 @@ export class UserService {
   }
 
   getStats(): Observable<ApiResponse<UserStats>> {
-    return this.http.get<ApiResponse<UserStats>>(`${this.base}/stats`);
+    return this.http.get<ApiResponse<UserStats>>(`${this.base}/stats`,
+      { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
   }
 }

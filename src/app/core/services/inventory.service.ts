@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api.models';
 import { InventoryResponse, InventoryUpdateRequest } from '../models/inventory.models';
+import { SILENT_ERROR_HEADER } from '../interceptors/error.interceptor';
 
 export interface InventoryStats {
   total: number;
@@ -35,6 +36,7 @@ export class InventoryService {
   }
 
   getStats(): Observable<ApiResponse<InventoryStats>> {
-    return this.http.get<ApiResponse<InventoryStats>>(`${this.url}/stats`);
+    return this.http.get<ApiResponse<InventoryStats>>(`${this.url}/stats`,
+      { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
   }
 }

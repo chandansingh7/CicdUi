@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api.models';
 import { CategoryRequest, CategoryResponse } from '../models/category.models';
+import { SILENT_ERROR_HEADER } from '../interceptors/error.interceptor';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
@@ -32,6 +33,7 @@ export class CategoryService {
   }
 
   getStats(): Observable<ApiResponse<{ total: number }>> {
-    return this.http.get<ApiResponse<{ total: number }>>(`${this.url}/stats`);
+    return this.http.get<ApiResponse<{ total: number }>>(`${this.url}/stats`,
+      { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
   }
 }

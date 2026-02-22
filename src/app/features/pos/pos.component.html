@@ -78,23 +78,28 @@
 
     <div class="cart-items" *ngIf="cart.length; else emptyCart">
       <div *ngFor="let item of cart" class="cart-item">
-        <div class="item-name-wrap">
+
+        <div class="item-left">
           <span class="item-name">{{ item.product.name }}</span>
-          <span class="item-unit-price">${{ item.product.price | number:'1.2-2' }}/ea</span>
+          <span class="item-unit-price">${{ item.product.price | number:'1.2-2' }} each</span>
         </div>
-        <div class="item-controls">
-          <button mat-icon-button class="qty-btn" (click)="updateQty(item, item.quantity - 1)" matTooltip="Decrease">
+
+        <div class="item-stepper">
+          <button class="step-btn" (click)="updateQty(item, item.quantity - 1)">
             <mat-icon>remove</mat-icon>
           </button>
-          <span class="qty">{{ item.quantity }}</span>
-          <button mat-icon-button class="qty-btn" (click)="updateQty(item, item.quantity + 1)" matTooltip="Increase">
+          <span class="step-qty">{{ item.quantity }}</span>
+          <button class="step-btn" (click)="updateQty(item, item.quantity + 1)">
             <mat-icon>add</mat-icon>
           </button>
-          <span class="item-subtotal">${{ item.subtotal | number:'1.2-2' }}</span>
-          <button mat-icon-button color="warn" class="remove-btn" (click)="removeFromCart(item)" matTooltip="Remove">
-            <mat-icon>close</mat-icon>
-          </button>
         </div>
+
+        <span class="item-subtotal">${{ item.subtotal | number:'1.2-2' }}</span>
+
+        <button class="item-remove" (click)="removeFromCart(item)" matTooltip="Remove">
+          <mat-icon>close</mat-icon>
+        </button>
+
       </div>
     </div>
 

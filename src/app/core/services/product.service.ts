@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PageResponse } from '../models/api.models';
 import { ProductRequest, ProductResponse } from '../models/product.models';
+import { SILENT_ERROR_HEADER } from '../interceptors/error.interceptor';
 
 export interface ProductStats {
   total: number;
@@ -52,6 +53,7 @@ export class ProductService {
   }
 
   getStats(): Observable<ApiResponse<ProductStats>> {
-    return this.http.get<ApiResponse<ProductStats>>(`${this.url}/stats`);
+    return this.http.get<ApiResponse<ProductStats>>(`${this.url}/stats`,
+      { headers: new HttpHeaders({ [SILENT_ERROR_HEADER]: '1' }) });
   }
 }
