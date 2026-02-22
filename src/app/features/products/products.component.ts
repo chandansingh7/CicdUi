@@ -226,4 +226,9 @@ export class ProductsComponent implements OnInit {
   get isAdmin(): boolean { return this.authService.isAdmin(); }
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
+
+  // ── Mini stats (computed from current page data) ───────────────────────────
+  get activeCount():      number { return this.dataSource.data.filter(p =>  p.active).length; }
+  get inactiveCount():    number { return this.dataSource.data.filter(p => !p.active).length; }
+  get outOfStockCount():  number { return this.dataSource.data.filter(p =>  p.quantity <= 0).length; }
 }

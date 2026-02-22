@@ -146,4 +146,9 @@ export class InventoryComponent implements OnInit {
 
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
+
+  // ── Mini stats (full dataset loaded) ──────────────────────────────────────
+  get inStockCount():     number { return this.dataSource.data.filter(i => i.stockStatus === 'IN_STOCK').length; }
+  get lowStockCount():    number { return this.dataSource.data.filter(i => i.stockStatus === 'LOW_STOCK').length; }
+  get outOfStockCount():  number { return this.dataSource.data.filter(i => i.stockStatus === 'OUT_OF_STOCK').length; }
 }

@@ -164,6 +164,63 @@ html, body {
   line-height: 22px !important;
 }
 
+// ─── Page Mini Stats Bar ─────────────────────────────────────────────────────
+// Small colored pill cards shown at the top of every list page.
+// Usage: <div class="page-stats"> <div class="stat-pill pill-primary"> ... </div> </div>
+.page-stats {
+  display: flex;
+  gap: v.$space-sm;
+  flex-wrap: wrap;
+  margin-bottom: v.$space-md;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: v.$radius-md;
+  cursor: default;
+
+  .pill-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.85;
+  }
+
+  .pill-body {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .pill-value {
+    font-size: 20px;
+    font-weight: v.$font-weight-bold;
+    letter-spacing: -0.02em;
+  }
+
+  .pill-label {
+    font-size: 10px;
+    font-weight: v.$font-weight-medium;
+    opacity: 0.80;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  // Colour variants — match dashboard card palette
+  &.pill-primary { background: v.$card-bg-orders;          color: #fff; }
+  &.pill-success { background: v.$card-bg-revenue;         color: #fff; }
+  &.pill-teal    { background: v.$card-bg-average;         color: #fff; }
+  &.pill-warn    { background: v.$card-bg-alert;           color: #fff; }
+  &.pill-purple  { background: v.$card-bg-monthly-orders;  color: #fff; }
+  &.pill-green   { background: v.$card-bg-monthly-revenue; color: #fff; }
+  &.pill-danger  { background: v.$color-danger;            color: #fff; }
+  &.pill-grey    { background: #546e7a;                    color: #fff; }
+}
+
 // ─── Snackbar Toasts ─────────────────────────────────────────────────────────
 .snack-success .mdc-snackbar__surface {
   background: v.$color-success !important;

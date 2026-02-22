@@ -151,4 +151,7 @@ export class CustomersComponent implements OnInit {
 
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
+
+  // ── Mini stats ─────────────────────────────────────────────────────────────
+  get totalCustomers(): number { return this.totalElements; }
 }

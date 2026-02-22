@@ -133,4 +133,12 @@ export class UsersComponent implements OnInit {
   }
 
   get currentUsername(): string { return this.authService.getUsername() || ''; }
+
+  // ── Mini stats (full dataset loaded) ──────────────────────────────────────
+  get totalUsers():    number { return this.dataSource.data.length; }
+  get adminCount():    number { return this.dataSource.data.filter(u => u.role === 'ADMIN').length; }
+  get managerCount():  number { return this.dataSource.data.filter(u => u.role === 'MANAGER').length; }
+  get cashierCount():  number { return this.dataSource.data.filter(u => u.role === 'CASHIER').length; }
+  get activeUserCount():   number { return this.dataSource.data.filter(u =>  u.active).length; }
+  get inactiveUserCount(): number { return this.dataSource.data.filter(u => !u.active).length; }
 }

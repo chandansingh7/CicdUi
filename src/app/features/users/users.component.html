@@ -2,6 +2,34 @@
   <h2>User Management</h2>
 </div>
 
+<!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
+<div class="page-stats">
+  <div class="stat-pill pill-primary">
+    <mat-icon class="pill-icon">people</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ totalUsers }}</span><span class="pill-label">Total Users</span></div>
+  </div>
+  <div class="stat-pill pill-warn">
+    <mat-icon class="pill-icon">admin_panel_settings</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ adminCount }}</span><span class="pill-label">Admins</span></div>
+  </div>
+  <div class="stat-pill pill-purple">
+    <mat-icon class="pill-icon">manage_accounts</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ managerCount }}</span><span class="pill-label">Managers</span></div>
+  </div>
+  <div class="stat-pill pill-teal">
+    <mat-icon class="pill-icon">point_of_sale</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ cashierCount }}</span><span class="pill-label">Cashiers</span></div>
+  </div>
+  <div class="stat-pill pill-success">
+    <mat-icon class="pill-icon">check_circle</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ activeUserCount }}</span><span class="pill-label">Active</span></div>
+  </div>
+  <div class="stat-pill pill-grey" *ngIf="inactiveUserCount > 0">
+    <mat-icon class="pill-icon">block</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ inactiveUserCount }}</span><span class="pill-label">Inactive</span></div>
+  </div>
+</div>
+
 <!-- ── User List Table ─────────────────────────────────────────────────────── -->
 <mat-card class="card user-list-card">
   <mat-card-header>

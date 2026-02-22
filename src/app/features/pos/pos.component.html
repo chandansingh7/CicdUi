@@ -33,14 +33,12 @@
 <div *ngIf="!completedOrder" class="pos-layout">
   <div class="product-panel">
     <div class="search-controls">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Search products</mat-label>
-        <input matInput [formControl]="searchControl">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <input matInput [formControl]="searchControl" placeholder="Search products (name or SKU)">
         <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Scan barcode</mat-label>
-        <input matInput [formControl]="barcodeControl">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <input matInput [formControl]="barcodeControl" placeholder="Scan or enter barcode">
         <mat-icon matPrefix>qr_code_scanner</mat-icon>
       </mat-form-field>
     </div>

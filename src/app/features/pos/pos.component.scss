@@ -15,7 +15,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: t.$space-md;
-  padding-top: 8px;          // room for floating labels above the input border
   margin-bottom: t.$space-md;
 
   @include t.xs { grid-template-columns: 1fr; }

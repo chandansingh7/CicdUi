@@ -10,6 +10,26 @@
   </div>
 </div>
 
+<!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
+<div class="page-stats">
+  <div class="stat-pill pill-primary">
+    <mat-icon class="pill-icon">inventory_2</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ totalElements }}</span><span class="pill-label">Total</span></div>
+  </div>
+  <div class="stat-pill pill-success">
+    <mat-icon class="pill-icon">check_circle</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ activeCount }}</span><span class="pill-label">Active</span></div>
+  </div>
+  <div class="stat-pill pill-grey">
+    <mat-icon class="pill-icon">cancel</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ inactiveCount }}</span><span class="pill-label">Inactive</span></div>
+  </div>
+  <div class="stat-pill pill-warn">
+    <mat-icon class="pill-icon">remove_shopping_cart</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ outOfStockCount }}</span><span class="pill-label">Out of Stock</span></div>
+  </div>
+</div>
+
 <mat-card class="card">
   <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
 

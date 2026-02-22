@@ -5,6 +5,30 @@
   </button>
 </div>
 
+<!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
+<div class="page-stats">
+  <div class="stat-pill pill-primary">
+    <mat-icon class="pill-icon">receipt_long</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ totalElements }}</span><span class="pill-label">Total</span></div>
+  </div>
+  <div class="stat-pill pill-success">
+    <mat-icon class="pill-icon">check_circle</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ completedCount }}</span><span class="pill-label">Completed</span></div>
+  </div>
+  <div class="stat-pill pill-teal">
+    <mat-icon class="pill-icon">schedule</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ pendingCount }}</span><span class="pill-label">Pending</span></div>
+  </div>
+  <div class="stat-pill pill-warn">
+    <mat-icon class="pill-icon">cancel</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ cancelledCount }}</span><span class="pill-label">Cancelled</span></div>
+  </div>
+  <div class="stat-pill pill-green">
+    <mat-icon class="pill-icon">payments</mat-icon>
+    <div class="pill-body"><span class="pill-value">${{ pageRevenue | number:'1.0-0' }}</span><span class="pill-label">Revenue</span></div>
+  </div>
+</div>
+
 <mat-card class="card">
   <div *ngIf="loading" style="display:flex;justify-content:center;padding:48px"><mat-spinner diameter="40"></mat-spinner></div>
 

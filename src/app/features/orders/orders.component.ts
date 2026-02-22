@@ -170,4 +170,10 @@ export class OrdersComponent implements OnInit {
   get isAdmin(): boolean { return this.authService.isAdmin(); }
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
+
+  // ── Mini stats (current page) ──────────────────────────────────────────────
+  get completedCount(): number { return this.dataSource.data.filter(o => o.status === 'COMPLETED').length; }
+  get pendingCount():   number { return this.dataSource.data.filter(o => o.status === 'PENDING').length; }
+  get cancelledCount(): number { return this.dataSource.data.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length; }
+  get pageRevenue():    number { return this.dataSource.data.filter(o => o.status === 'COMPLETED').reduce((s, o) => s + o.total, 0); }
 }

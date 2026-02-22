@@ -5,6 +5,26 @@
   </button>
 </div>
 
+<!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
+<div class="page-stats">
+  <div class="stat-pill pill-primary">
+    <mat-icon class="pill-icon">warehouse</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ dataSource.data.length }}</span><span class="pill-label">Total Items</span></div>
+  </div>
+  <div class="stat-pill pill-success">
+    <mat-icon class="pill-icon">check_circle</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ inStockCount }}</span><span class="pill-label">In Stock</span></div>
+  </div>
+  <div class="stat-pill pill-purple">
+    <mat-icon class="pill-icon">warning</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ lowStockCount }}</span><span class="pill-label">Low Stock</span></div>
+  </div>
+  <div class="stat-pill pill-warn">
+    <mat-icon class="pill-icon">remove_shopping_cart</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ outOfStockCount }}</span><span class="pill-label">Out of Stock</span></div>
+  </div>
+</div>
+
 <div *ngIf="lowStockItems.length" class="alert-banner">
   <mat-icon>warning</mat-icon>
   <strong>{{ lowStockItems.length }} item(s)</strong> need attention (low stock or out of stock)

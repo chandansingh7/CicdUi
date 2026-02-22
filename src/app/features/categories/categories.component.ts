@@ -132,4 +132,7 @@ export class CategoriesComponent implements OnInit {
   get isAdmin(): boolean { return this.authService.isAdmin(); }
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
+
+  // ── Mini stats ─────────────────────────────────────────────────────────────
+  get totalCategories(): number { return this.dataSource.data.length; }
 }

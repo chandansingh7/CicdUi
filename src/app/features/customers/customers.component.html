@@ -10,6 +10,14 @@
   </div>
 </div>
 
+<!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
+<div class="page-stats">
+  <div class="stat-pill pill-primary">
+    <mat-icon class="pill-icon">people</mat-icon>
+    <div class="pill-body"><span class="pill-value">{{ totalElements }}</span><span class="pill-label">Total Customers</span></div>
+  </div>
+</div>
+
 <mat-card class="card">
   <div *ngIf="loading" style="display:flex;justify-content:center;padding:48px"><mat-spinner diameter="40"></mat-spinner></div>
 
