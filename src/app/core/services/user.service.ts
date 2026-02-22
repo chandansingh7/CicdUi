@@ -28,6 +28,15 @@ export interface UpdateProfileRequest {
   deliveryAddress: string | null;
 }
 
+export interface UserStats {
+  total: number;
+  admins: number;
+  managers: number;
+  cashiers: number;
+  active: number;
+  inactive: number;
+}
+
 export interface AdminUpdateUserRequest {
   firstName: string | null;
   lastName: string | null;
@@ -63,5 +72,9 @@ export class UserService {
 
   toggleActive(id: number): Observable<ApiResponse<UserResponse>> {
     return this.http.patch<ApiResponse<UserResponse>>(`${this.base}/${id}/toggle-active`, {});
+  }
+
+  getStats(): Observable<ApiResponse<UserStats>> {
+    return this.http.get<ApiResponse<UserStats>>(`${this.base}/stats`);
   }
 }

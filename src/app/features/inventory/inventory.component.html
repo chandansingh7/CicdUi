@@ -6,22 +6,22 @@
 </div>
 
 <!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
-<div class="page-stats">
+<div class="page-stats" *ngIf="stats">
   <div class="stat-pill pill-primary">
     <mat-icon class="pill-icon">warehouse</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ dataSource.data.length }}</span><span class="pill-label">Total Items</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.total }}</span><span class="pill-label">Total Items</span></div>
   </div>
   <div class="stat-pill pill-success">
     <mat-icon class="pill-icon">check_circle</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ inStockCount }}</span><span class="pill-label">In Stock</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.inStock }}</span><span class="pill-label">In Stock</span></div>
   </div>
   <div class="stat-pill pill-purple">
     <mat-icon class="pill-icon">warning</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ lowStockCount }}</span><span class="pill-label">Low Stock</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.lowStock }}</span><span class="pill-label">Low Stock</span></div>
   </div>
   <div class="stat-pill pill-warn">
     <mat-icon class="pill-icon">remove_shopping_cart</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ outOfStockCount }}</span><span class="pill-label">Out of Stock</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.outOfStock }}</span><span class="pill-label">Out of Stock</span></div>
   </div>
 </div>
 

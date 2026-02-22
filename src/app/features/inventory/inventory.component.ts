@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-import { InventoryService } from '../../core/services/inventory.service';
+import { InventoryService, InventoryStats } from '../../core/services/inventory.service';
 import { AuthService } from '../../core/services/auth.service';
 import { InventoryResponse } from '../../core/models/inventory.models';
 import { InventoryDialogComponent } from './inventory-dialog.component';
@@ -20,6 +20,7 @@ export class InventoryComponent implements OnInit {
   displayedColumns = ['productName', 'sku', 'quantity', 'threshold', 'status', 'updatedAt', 'actions'];
 
   loading = false;
+  stats: InventoryStats | null = null;
 
   filters = new FormGroup({
     productName: new FormControl(''),
@@ -43,7 +44,12 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     this.setupFilterPredicate();
     this.load();
+    this.loadStats();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  loadStats(): void {
+    this.inventoryService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
   }
 
   sortBy(col: string): void {
@@ -147,8 +153,4 @@ export class InventoryComponent implements OnInit {
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
-  // ── Mini stats (full dataset loaded) ──────────────────────────────────────
-  get inStockCount():     number { return this.dataSource.data.filter(i => i.stockStatus === 'IN_STOCK').length; }
-  get lowStockCount():    number { return this.dataSource.data.filter(i => i.stockStatus === 'LOW_STOCK').length; }
-  get outOfStockCount():  number { return this.dataSource.data.filter(i => i.stockStatus === 'OUT_OF_STOCK').length; }
 }

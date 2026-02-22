@@ -6,26 +6,26 @@
 </div>
 
 <!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
-<div class="page-stats">
+<div class="page-stats" *ngIf="stats">
   <div class="stat-pill pill-primary">
     <mat-icon class="pill-icon">receipt_long</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ totalElements }}</span><span class="pill-label">Total</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.total }}</span><span class="pill-label">Total</span></div>
   </div>
   <div class="stat-pill pill-success">
     <mat-icon class="pill-icon">check_circle</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ completedCount }}</span><span class="pill-label">Completed</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.completed }}</span><span class="pill-label">Completed</span></div>
   </div>
   <div class="stat-pill pill-teal">
     <mat-icon class="pill-icon">schedule</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ pendingCount }}</span><span class="pill-label">Pending</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.pending }}</span><span class="pill-label">Pending</span></div>
   </div>
   <div class="stat-pill pill-warn">
     <mat-icon class="pill-icon">cancel</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ cancelledCount }}</span><span class="pill-label">Cancelled</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.cancelled + stats.refunded }}</span><span class="pill-label">Cancelled</span></div>
   </div>
   <div class="stat-pill pill-green">
     <mat-icon class="pill-icon">payments</mat-icon>
-    <div class="pill-body"><span class="pill-value">${{ pageRevenue | number:'1.0-0' }}</span><span class="pill-label">Revenue</span></div>
+    <div class="pill-body"><span class="pill-value">${{ stats.totalRevenue | number:'1.0-0' }}</span><span class="pill-label">Revenue</span></div>
   </div>
 </div>
 

@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-import { OrderService } from '../../core/services/order.service';
+import { OrderService, OrderStats } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
 import { OrderResponse } from '../../core/models/order.models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -18,6 +18,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 export class OrdersComponent implements OnInit {
   dataSource = new MatTableDataSource<OrderResponse>();
   displayedColumns = ['id', 'customer', 'cashier', 'items', 'total', 'payment', 'status', 'date', 'actions'];
+  stats: OrderStats | null = null;
 
   totalElements = 0;
   pageSize = 10;
@@ -48,7 +49,12 @@ export class OrdersComponent implements OnInit {
   ngOnInit(): void {
     this.setupFilterPredicate();
     this.load();
+    this.loadStats();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  loadStats(): void {
+    this.orderService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
   }
 
   sortBy(col: string): void {
@@ -171,9 +177,4 @@ export class OrdersComponent implements OnInit {
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
-  // ── Mini stats (current page) ──────────────────────────────────────────────
-  get completedCount(): number { return this.dataSource.data.filter(o => o.status === 'COMPLETED').length; }
-  get pendingCount():   number { return this.dataSource.data.filter(o => o.status === 'PENDING').length; }
-  get cancelledCount(): number { return this.dataSource.data.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length; }
-  get pageRevenue():    number { return this.dataSource.data.filter(o => o.status === 'COMPLETED').reduce((s, o) => s + o.total, 0); }
 }

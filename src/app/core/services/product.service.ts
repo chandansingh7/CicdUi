@@ -5,6 +5,13 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse, PageResponse } from '../models/api.models';
 import { ProductRequest, ProductResponse } from '../models/product.models';
 
+export interface ProductStats {
+  total: number;
+  active: number;
+  inactive: number;
+  outOfStock: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private url = `${environment.apiUrl}/api/products`;
@@ -42,5 +49,9 @@ export class ProductService {
     const form = new FormData();
     form.append('file', file);
     return this.http.post<ApiResponse<ProductResponse>>(`${this.url}/${id}/image`, form);
+  }
+
+  getStats(): Observable<ApiResponse<ProductStats>> {
+    return this.http.get<ApiResponse<ProductStats>>(`${this.url}/stats`);
   }
 }

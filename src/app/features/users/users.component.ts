@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from '../../core/services/auth.service';
-import { UserService, UserResponse } from '../../core/services/user.service';
+import { UserService, UserResponse, UserStats } from '../../core/services/user.service';
 import { Role } from '../../core/models/auth.models';
 import { EditUserDialogComponent } from '../../shared/components/edit-user-dialog/edit-user-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -19,6 +19,7 @@ export class UsersComponent implements OnInit {
   dataSource = new MatTableDataSource<UserResponse>();
   displayedColumns = ['username', 'email', 'role', 'status', 'createdAt', 'actions'];
   loadingUsers = false;
+  stats: UserStats | null = null;
 
   // ── Create form ───────────────────────────────────────────────────────────
   createForm: FormGroup;
@@ -59,7 +60,11 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { this.loadUsers(); }
+  ngOnInit(): void { this.loadUsers(); this.loadStats(); }
+
+  loadStats(): void {
+    this.userService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
+  }
 
   loadUsers(): void {
     this.loadingUsers = true;
@@ -134,11 +139,4 @@ export class UsersComponent implements OnInit {
 
   get currentUsername(): string { return this.authService.getUsername() || ''; }
 
-  // ── Mini stats (full dataset loaded) ──────────────────────────────────────
-  get totalUsers():    number { return this.dataSource.data.length; }
-  get adminCount():    number { return this.dataSource.data.filter(u => u.role === 'ADMIN').length; }
-  get managerCount():  number { return this.dataSource.data.filter(u => u.role === 'MANAGER').length; }
-  get cashierCount():  number { return this.dataSource.data.filter(u => u.role === 'CASHIER').length; }
-  get activeUserCount():   number { return this.dataSource.data.filter(u =>  u.active).length; }
-  get inactiveUserCount(): number { return this.dataSource.data.filter(u => !u.active).length; }
 }

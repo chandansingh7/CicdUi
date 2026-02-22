@@ -19,6 +19,7 @@ export class CategoriesComponent implements OnInit {
   dataSource = new MatTableDataSource<CategoryResponse>();
   displayedColumns = ['name', 'description', 'updatedAt', 'actions'];
   loading = false;
+  stats: { total: number } | null = null;
 
   filters = new FormGroup({
     name:        new FormControl(''),
@@ -39,7 +40,12 @@ export class CategoriesComponent implements OnInit {
   ngOnInit(): void {
     this.setupFilterPredicate();
     this.load();
+    this.loadStats();
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  loadStats(): void {
+    this.categoryService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
   }
 
   sortBy(col: string): void {
@@ -133,6 +139,4 @@ export class CategoriesComponent implements OnInit {
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
-  // ── Mini stats ─────────────────────────────────────────────────────────────
-  get totalCategories(): number { return this.dataSource.data.length; }
 }

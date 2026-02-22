@@ -11,10 +11,10 @@
 </div>
 
 <!-- ── Mini Stats ──────────────────────────────────────────────────────────── -->
-<div class="page-stats">
+<div class="page-stats" *ngIf="stats">
   <div class="stat-pill pill-primary">
     <mat-icon class="pill-icon">people</mat-icon>
-    <div class="pill-body"><span class="pill-value">{{ totalElements }}</span><span class="pill-label">Total Customers</span></div>
+    <div class="pill-body"><span class="pill-value">{{ stats.total }}</span><span class="pill-label">Total Customers</span></div>
   </div>
 </div>
 

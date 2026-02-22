@@ -5,6 +5,15 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse, PageResponse } from '../models/api.models';
 import { OrderRequest, OrderResponse } from '../models/order.models';
 
+export interface OrderStats {
+  total: number;
+  completed: number;
+  pending: number;
+  cancelled: number;
+  refunded: number;
+  totalRevenue: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private url = `${environment.apiUrl}/api/orders`;
@@ -26,5 +35,9 @@ export class OrderService {
 
   cancel(id: number): Observable<ApiResponse<OrderResponse>> {
     return this.http.put<ApiResponse<OrderResponse>>(`${this.url}/${id}/cancel`, {});
+  }
+
+  getStats(): Observable<ApiResponse<OrderStats>> {
+    return this.http.get<ApiResponse<OrderStats>>(`${this.url}/stats`);
   }
 }

@@ -24,6 +24,7 @@ export class CustomersComponent implements OnInit {
   pageSize = 10;
   loading = false;
   searchControl = new FormControl('');
+  stats: { total: number } | null = null;
 
   filters = new FormGroup({
     name:      new FormControl(''),
@@ -48,9 +49,14 @@ export class CustomersComponent implements OnInit {
   ngOnInit(): void {
     this.setupFilterPredicate();
     this.load();
+    this.loadStats();
     this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(() => this.load(0));
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  loadStats(): void {
+    this.customerService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
   }
 
   sortBy(col: string): void {
@@ -152,6 +158,4 @@ export class CustomersComponent implements OnInit {
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
-  // ── Mini stats ─────────────────────────────────────────────────────────────
-  get totalCustomers(): number { return this.totalElements; }
 }

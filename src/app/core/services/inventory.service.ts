@@ -5,6 +5,13 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api.models';
 import { InventoryResponse, InventoryUpdateRequest } from '../models/inventory.models';
 
+export interface InventoryStats {
+  total: number;
+  inStock: number;
+  lowStock: number;
+  outOfStock: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
   private url = `${environment.apiUrl}/api/inventory`;
@@ -25,5 +32,9 @@ export class InventoryService {
 
   update(productId: number, req: InventoryUpdateRequest): Observable<ApiResponse<InventoryResponse>> {
     return this.http.put<ApiResponse<InventoryResponse>>(`${this.url}/product/${productId}`, req);
+  }
+
+  getStats(): Observable<ApiResponse<InventoryStats>> {
+    return this.http.get<ApiResponse<InventoryStats>>(`${this.url}/stats`);
   }
 }

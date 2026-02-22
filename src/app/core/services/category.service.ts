@@ -30,4 +30,8 @@ export class CategoryService {
   delete(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.url}/${id}`);
   }
+
+  getStats(): Observable<ApiResponse<{ total: number }>> {
+    return this.http.get<ApiResponse<{ total: number }>>(`${this.url}/stats`);
+  }
 }

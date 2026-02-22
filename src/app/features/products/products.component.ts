@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ProductService } from '../../core/services/product.service';
+import { ProductService, ProductStats } from '../../core/services/product.service';
 import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ProductResponse } from '../../core/models/product.models';
@@ -22,6 +22,7 @@ export class ProductsComponent implements OnInit {
   dataSource = new MatTableDataSource<ProductResponse>();
   categories: CategoryResponse[] = [];
   brokenImages = new Set<number>();
+  stats: ProductStats | null = null;
 
   displayedColumns = ['image', 'name', 'sku', 'category', 'price', 'stock', 'status', 'updatedAt', 'actions'];
 
@@ -60,10 +61,15 @@ export class ProductsComponent implements OnInit {
     this.setupFilterPredicate();
     this.loadCategories();
     this.loadProducts();
+    this.loadStats();
     this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(() => this.loadProducts(0));
     this.categoryFilter.valueChanges.subscribe(() => this.loadProducts(0));
     this.filters.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyColumnFilters());
+  }
+
+  loadStats(): void {
+    this.productService.getStats().subscribe({ next: res => { this.stats = res.data ?? null; } });
   }
 
   sortBy(col: string): void {
@@ -227,8 +233,4 @@ export class ProductsComponent implements OnInit {
   get isAdminOrManager(): boolean { return this.authService.isAdminOrManager(); }
   get hasActiveFilters(): boolean { return Object.values(this.filters.value).some(v => !!v); }
 
-  // ── Mini stats (computed from current page data) ───────────────────────────
-  get activeCount():      number { return this.dataSource.data.filter(p =>  p.active).length; }
-  get inactiveCount():    number { return this.dataSource.data.filter(p => !p.active).length; }
-  get outOfStockCount():  number { return this.dataSource.data.filter(p =>  p.quantity <= 0).length; }
 }
